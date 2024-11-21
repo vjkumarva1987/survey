@@ -22,15 +22,13 @@ const nextConfig = {
   poweredByHeader: false,
   experimental: {
     serverComponentsExternalPackages: ["@aws-sdk"],
+    after: true,
     instrumentationHook: true,
-    staleTimes: {
-      dynamic: 0,
-    },
     outputFileTracingIncludes: {
       "app/api/packages": ["../../packages/js-core/dist/*", "../../packages/surveys/dist/*"],
     },
   },
-  transpilePackages: ["@formbricks/database", "@formbricks/ee", "@formbricks/ui", "@formbricks/lib"],
+  transpilePackages: ["@formbricks/database", "@formbricks/ui", "@formbricks/lib"],
   images: {
     remotePatterns: [
       {
@@ -166,7 +164,7 @@ const nextConfig = {
           {
             key: "Content-Security-Policy",
             value:
-              "default-src 'self'; script-src 'self' 'unsafe-inline' https:; style-src 'self' 'unsafe-inline' https:; img-src 'self' data: https:; font-src 'self' https:; connect-src 'self' https:; frame-src 'self'; media-src 'self' https:; object-src 'none'; base-uri 'self'; form-action 'self';",
+              "default-src 'self'; script-src 'self' 'unsafe-inline' https:; style-src 'self' 'unsafe-inline' https:; img-src 'self' data: https:; font-src 'self' https:; connect-src 'self' https:; frame-src 'self' https://app.cal.com; media-src 'self' https:; object-src 'none'; base-uri 'self'; form-action 'self';",
           },
         ],
       },

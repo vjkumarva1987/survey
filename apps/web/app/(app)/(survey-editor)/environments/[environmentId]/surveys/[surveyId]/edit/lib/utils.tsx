@@ -13,6 +13,7 @@ import {
   TSurvey,
   TSurveyLogic,
   TSurveyLogicAction,
+  TSurveyLogicActions,
   TSurveyLogicConditionsOperator,
   TSurveyQuestion,
   TSurveyQuestionId,
@@ -146,6 +147,10 @@ export const actionObjectiveOptions: TComboboxOption[] = [
   { label: "environments.surveys.edit.require_answer", value: "requireAnswer" },
   { label: "environments.surveys.edit.jump_to_question", value: "jumpToQuestion" },
 ];
+
+export const hasJumpToQuestionAction = (actions: TSurveyLogicActions): boolean => {
+  return actions.some((action) => action.objective === "jumpToQuestion");
+};
 
 const getQuestionOperatorOptions = (question: TSurveyQuestion): TComboboxOption[] => {
   let options: TLogicRuleOption;
@@ -603,8 +608,10 @@ export const getMatchValueProps = (
         options: groupedOptions,
       };
     } else if (selectedVariable?.type === "number") {
-      const allowedQuestions = questions.filter((question) =>
-        [TSurveyQuestionTypeEnum.Rating, TSurveyQuestionTypeEnum.NPS].includes(question.type)
+      const allowedQuestions = questions.filter(
+        (question) =>
+          [TSurveyQuestionTypeEnum.Rating, TSurveyQuestionTypeEnum.NPS].includes(question.type) ||
+          (question.type === TSurveyQuestionTypeEnum.OpenText && question.inputType === "number")
       );
 
       const questionOptions = allowedQuestions.map((question) => {
@@ -940,8 +947,10 @@ export const getActionValueOptions = (
 
     return groupedOptions;
   } else if (selectedVariable.type === "number") {
-    const allowedQuestions = questions.filter((question) =>
-      [TSurveyQuestionTypeEnum.Rating, TSurveyQuestionTypeEnum.NPS].includes(question.type)
+    const allowedQuestions = questions.filter(
+      (question) =>
+        [TSurveyQuestionTypeEnum.Rating, TSurveyQuestionTypeEnum.NPS].includes(question.type) ||
+        (question.type === TSurveyQuestionTypeEnum.OpenText && question.inputType === "number")
     );
 
     const questionOptions = allowedQuestions.map((question) => {
@@ -1060,7 +1069,9 @@ export const findQuestionUsedInLogic = (survey: TSurvey, questionId: TSurveyQues
   };
 
   return survey.questions.findIndex(
-    (question) => question.logic && question.id !== questionId && question.logic.some(isUsedInLogicRule)
+    (question) =>
+      question.logicFallback === questionId ||
+      (question.id !== questionId && question.logic?.some(isUsedInLogicRule))
   );
 };
 
@@ -1144,4 +1155,18 @@ export const findHiddenFieldUsedInLogic = (survey: TSurvey, hiddenFieldId: strin
   };
 
   return survey.questions.findIndex((question) => question.logic?.some(isUsedInLogicRule));
+};
+
+export const findEndingCardUsedInLogic = (survey: TSurvey, endingCardId: string): number => {
+  const isUsedInAction = (action: TSurveyLogicAction): boolean => {
+    return action.objective === "jumpToQuestion" && action.target === endingCardId;
+  };
+
+  const isUsedInLogicRule = (logicRule: TSurveyLogic): boolean => {
+    return logicRule.actions.some(isUsedInAction);
+  };
+
+  return survey.questions.findIndex(
+    (question) => question.logicFallback === endingCardId || question.logic?.some(isUsedInLogicRule)
+  );
 };

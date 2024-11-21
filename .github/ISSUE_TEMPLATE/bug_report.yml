@@ -1,7 +1,6 @@
 name: Bug report
 description: "Found a bug? Please fill out the sections below. \U0001F44D"
-labels:
-  - bug
+type: bug
 body:
   - type: textarea
     id: issue-summary
@@ -10,6 +9,13 @@ body:
       description: A summary of the issue. This needs to be a clear detailed-rich summary.
     validations:
       required: true
+  - type: textarea
+    id: issue-expected-behavior
+    attributes:
+      label: Expected Behavior
+      description: A clear and concise description of what you expected to happen.
+    validations:
+      required: false
   - type: textarea
     id: other-information
     attributes:

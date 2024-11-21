@@ -2,8 +2,11 @@ import { WidgetStatusIndicator } from "@/app/(app)/environments/[environmentId]/
 import { EnvironmentIdField } from "@/app/(app)/environments/[environmentId]/product/(setup)/components/EnvironmentIdField";
 import { SetupInstructions } from "@/app/(app)/environments/[environmentId]/product/(setup)/components/SetupInstructions";
 import { ProductConfigNavigation } from "@/app/(app)/environments/[environmentId]/product/components/ProductConfigNavigation";
+import {
+  getMultiLanguagePermission,
+  getRoleManagementPermission,
+} from "@/modules/ee/license-check/lib/utils";
 import { getTranslations } from "next-intl/server";
-import { getMultiLanguagePermission } from "@formbricks/ee/lib/service";
 import { WEBAPP_URL } from "@formbricks/lib/constants";
 import { getEnvironment } from "@formbricks/lib/environment/service";
 import { getOrganizationByEnvironmentId } from "@formbricks/lib/organization/service";
@@ -12,7 +15,8 @@ import { PageContentWrapper } from "@formbricks/ui/components/PageContentWrapper
 import { PageHeader } from "@formbricks/ui/components/PageHeader";
 import { SettingsCard } from "../../../settings/components/SettingsCard";
 
-const Page = async ({ params }) => {
+const Page = async (props) => {
+  const params = await props.params;
   const t = await getTranslations();
   const [environment, organization] = await Promise.all([
     getEnvironment(params.environmentId),
@@ -28,6 +32,7 @@ const Page = async ({ params }) => {
   }
 
   const isMultiLanguageAllowed = await getMultiLanguagePermission(organization);
+  const canDoRoleManagement = await getRoleManagementPermission(organization);
 
   return (
     <PageContentWrapper>
@@ -36,6 +41,7 @@ const Page = async ({ params }) => {
           environmentId={params.environmentId}
           activeId="app-connection"
           isMultiLanguageAllowed={isMultiLanguageAllowed}
+          canDoRoleManagement={canDoRoleManagement}
         />
       </PageHeader>
       <div className="space-y-4">
