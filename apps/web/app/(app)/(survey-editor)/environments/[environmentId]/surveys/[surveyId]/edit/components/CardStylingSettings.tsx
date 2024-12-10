@@ -1,5 +1,11 @@
 "use client";
 
+import { Badge } from "@/modules/ui/components/badge";
+import { CardArrangementTabs } from "@/modules/ui/components/card-arrangement-tabs";
+import { ColorPicker } from "@/modules/ui/components/color-picker";
+import { FormControl, FormDescription, FormField, FormItem, FormLabel } from "@/modules/ui/components/form";
+import { Slider } from "@/modules/ui/components/slider";
+import { Switch } from "@/modules/ui/components/switch";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import * as Collapsible from "@radix-ui/react-collapsible";
 import { CheckIcon } from "lucide-react";
@@ -8,14 +14,8 @@ import React from "react";
 import { UseFormReturn } from "react-hook-form";
 import { cn } from "@formbricks/lib/cn";
 import { COLOR_DEFAULTS } from "@formbricks/lib/styling/constants";
-import { TProduct, TProductStyling } from "@formbricks/types/product";
+import { TProject, TProjectStyling } from "@formbricks/types/project";
 import { TSurveyStyling, TSurveyType } from "@formbricks/types/surveys/types";
-import { Badge } from "@formbricks/ui/components/Badge";
-import { CardArrangementTabs } from "@formbricks/ui/components/CardArrangementTabs";
-import { ColorPicker } from "@formbricks/ui/components/ColorPicker";
-import { FormControl, FormDescription, FormField, FormItem, FormLabel } from "@formbricks/ui/components/Form";
-import { Slider } from "@formbricks/ui/components/Slider";
-import { Switch } from "@formbricks/ui/components/Switch";
 
 type CardStylingSettingsProps = {
   open: boolean;
@@ -23,8 +23,8 @@ type CardStylingSettingsProps = {
   isSettingsPage?: boolean;
   surveyType?: TSurveyType;
   disabled?: boolean;
-  product: TProduct;
-  form: UseFormReturn<TProductStyling | TSurveyStyling>;
+  project: TProject;
+  form: UseFormReturn<TProjectStyling | TSurveyStyling>;
 };
 
 export const CardStylingSettings = ({
@@ -32,14 +32,14 @@ export const CardStylingSettings = ({
   surveyType,
   disabled,
   open,
-  product,
+  project,
   setOpen,
   form,
 }: CardStylingSettingsProps) => {
   const t = useTranslations();
   const isAppSurvey = surveyType === "app";
   const surveyTypeDerived = isAppSurvey ? "App" : "Link";
-  const isLogoVisible = !!product.logo?.url;
+  const isLogoVisible = !!project.logo?.url;
 
   const linkCardArrangement = form.watch("cardArrangement.linkSurveys") ?? "straight";
   const appCardArrangement = form.watch("cardArrangement.appSurveys") ?? "straight";

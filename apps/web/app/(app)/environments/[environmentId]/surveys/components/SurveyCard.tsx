@@ -4,6 +4,7 @@ import { generateSingleUseIdAction } from "@/app/(app)/environments/[environment
 import { SurveyTypeIndicator } from "@/app/(app)/environments/[environmentId]/surveys/components/SurveyTypeIndicator";
 import { TSurvey } from "@/app/(app)/environments/[environmentId]/surveys/types/surveys";
 import { getFormattedErrorMessage } from "@/lib/utils/helper";
+import { SurveyStatusIndicator } from "@/modules/ui/components/survey-status-indicator";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
@@ -12,7 +13,6 @@ import { cn } from "@formbricks/lib/cn";
 import { convertDateString, timeSince } from "@formbricks/lib/time";
 import { TEnvironment } from "@formbricks/types/environment";
 import { TUserLocale } from "@formbricks/types/user";
-import { SurveyStatusIndicator } from "@formbricks/ui/components/SurveyStatusIndicator";
 import { SurveyDropDownMenu } from "./SurveyDropdownMenu";
 
 interface SurveyCardProps {
@@ -37,13 +37,18 @@ export const SurveyCard = ({
 }: SurveyCardProps) => {
   const isSurveyCreationDeletionDisabled = isReadOnly;
   const t = useTranslations();
-  const surveyStatusLabel = useMemo(() => {
-    if (survey.status === "inProgress") return t("common.in_progress");
-    else if (survey.status === "scheduled") return t("common.scheduled");
-    else if (survey.status === "completed") return t("common.completed");
-    else if (survey.status === "draft") return t("common.draft");
-    else if (survey.status === "paused") return t("common.paused");
-  }, [survey]);
+  const surveyStatusLabel =
+    survey.status === "inProgress"
+      ? t("common.in_progress")
+      : survey.status === "scheduled"
+        ? t("common.scheduled")
+        : survey.status === "completed"
+          ? t("common.completed")
+          : survey.status === "draft"
+            ? t("common.draft")
+            : survey.status === "paused"
+              ? t("common.paused")
+              : undefined;
 
   const [singleUseId, setSingleUseId] = useState<string | undefined>();
 

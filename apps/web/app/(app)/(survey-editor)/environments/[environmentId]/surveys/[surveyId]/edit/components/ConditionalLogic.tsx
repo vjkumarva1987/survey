@@ -3,6 +3,14 @@ import {
   getDefaultOperatorForQuestion,
   replaceEndingCardHeadlineRecall,
 } from "@/app/(app)/(survey-editor)/environments/[environmentId]/surveys/[surveyId]/edit/lib/utils";
+import { Button } from "@/modules/ui/components/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/modules/ui/components/dropdown-menu";
+import { Label } from "@/modules/ui/components/label";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { createId } from "@paralleldrive/cuid2";
 import {
@@ -18,27 +26,19 @@ import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 import { duplicateLogicItem } from "@formbricks/lib/surveyLogic/utils";
 import { replaceHeadlineRecall } from "@formbricks/lib/utils/recall";
-import { TAttributeClass } from "@formbricks/types/attribute-classes";
+import { TContactAttributeKey } from "@formbricks/types/contact-attribute-key";
 import { TSurvey, TSurveyLogic, TSurveyQuestion } from "@formbricks/types/surveys/types";
-import { Button } from "@formbricks/ui/components/Button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@formbricks/ui/components/DropdownMenu";
-import { Label } from "@formbricks/ui/components/Label";
 
 interface ConditionalLogicProps {
   localSurvey: TSurvey;
   questionIdx: number;
   question: TSurveyQuestion;
   updateQuestion: (questionIdx: number, updatedAttributes: any) => void;
-  attributeClasses: TAttributeClass[];
+  contactAttributeKeys: TContactAttributeKey[];
 }
 
 export function ConditionalLogic({
-  attributeClasses,
+  contactAttributeKeys,
   localSurvey,
   question,
   questionIdx,
@@ -46,11 +46,11 @@ export function ConditionalLogic({
 }: ConditionalLogicProps) {
   const t = useTranslations();
   const transformedSurvey = useMemo(() => {
-    let modifiedSurvey = replaceHeadlineRecall(localSurvey, "default", attributeClasses);
-    modifiedSurvey = replaceEndingCardHeadlineRecall(modifiedSurvey, "default", attributeClasses);
+    let modifiedSurvey = replaceHeadlineRecall(localSurvey, "default", contactAttributeKeys);
+    modifiedSurvey = replaceEndingCardHeadlineRecall(modifiedSurvey, "default", contactAttributeKeys);
 
     return modifiedSurvey;
-  }, [localSurvey, attributeClasses]);
+  }, [localSurvey, contactAttributeKeys]);
 
   const addLogic = () => {
     const operator = getDefaultOperatorForQuestion(question);
@@ -186,14 +186,13 @@ export function ConditionalLogic({
       <div className="mt-2 flex items-center space-x-2">
         <Button
           id="logicJumps"
-          className="bg-slate-100 hover:bg-slate-50"
           type="button"
           name="logicJumps"
           size="sm"
           variant="secondary"
-          EndIcon={PlusIcon}
           onClick={addLogic}>
           {t("environments.surveys.edit.add_logic")}
+          <PlusIcon />
         </Button>
       </div>
     </div>

@@ -1,20 +1,20 @@
-import { useTranslations } from "next-intl";
-import { getLanguageLabel } from "@formbricks/lib/i18n/utils";
-import type { TLanguage, TProduct } from "@formbricks/types/product";
-import { DefaultTag } from "@formbricks/ui/components/DefaultTag";
+import { DefaultTag } from "@/modules/ui/components/default-tag";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@formbricks/ui/components/Select";
+} from "@/modules/ui/components/select";
+import { useTranslations } from "next-intl";
+import { getLanguageLabel } from "@formbricks/lib/i18n/utils";
+import type { TLanguage, TProject } from "@formbricks/types/project";
 import type { ConfirmationModalProps } from "./multi-language-card";
 
 interface DefaultLanguageSelectProps {
   defaultLanguage?: TLanguage;
   handleDefaultLanguageChange: (languageCode: string) => void;
-  product: TProduct;
+  project: TProject;
   setConfirmationModalInfo: (confirmationModal: ConfirmationModalProps) => void;
   locale: string;
 }
@@ -22,7 +22,7 @@ interface DefaultLanguageSelectProps {
 export function DefaultLanguageSelect({
   defaultLanguage,
   handleDefaultLanguageChange,
-  product,
+  project,
   setConfirmationModalInfo,
   locale,
 }: DefaultLanguageSelectProps) {
@@ -52,7 +52,7 @@ export function DefaultLanguageSelect({
                 onConfirm: () => {
                   handleDefaultLanguageChange(languageCode);
                 },
-                buttonVariant: "primary",
+                buttonVariant: "default",
               });
             }}
             value={`${defaultLanguage?.code}`}>
@@ -60,7 +60,7 @@ export function DefaultLanguageSelect({
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              {product.languages.map((language) => (
+              {project.languages.map((language) => (
                 <SelectItem
                   className="xs:text-base px-0.5 py-1 text-xs text-slate-800 dark:bg-slate-700 dark:text-slate-300 dark:ring-slate-700"
                   key={language.id}

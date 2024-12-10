@@ -1,12 +1,12 @@
 import { generateSingleUseIdAction } from "@/app/(app)/environments/[environmentId]/surveys/actions";
 import { getFormattedErrorMessage } from "@/lib/utils/helper";
+import { Button } from "@/modules/ui/components/button";
 import { Copy, RefreshCcw, SquareArrowOutUpRight } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { TSurvey } from "@formbricks/types/surveys/types";
 import { TUserLocale } from "@formbricks/types/user";
-import { Button } from "@formbricks/ui/components/Button";
 import { LanguageDropdown } from "./components/LanguageDropdown";
 import { SurveyLinkDisplay } from "./components/SurveyLinkDisplay";
 
@@ -73,7 +73,6 @@ export const ShareSurveyLink = ({
       <div className="mt-2 flex items-center justify-center space-x-2">
         <LanguageDropdown survey={survey} setLanguage={setLanguage} locale={locale} />
         <Button
-          size="base"
           title={t("environments.surveys.preview_survey_in_a_new_tab")}
           aria-label={t("environments.surveys.preview_survey_in_a_new_tab")}
           onClick={() => {
@@ -84,21 +83,20 @@ export const ShareSurveyLink = ({
               previewUrl += "?preview=true";
             }
             window.open(previewUrl, "_blank");
-          }}
-          EndIcon={SquareArrowOutUpRight}>
+          }}>
           {t("common.preview")}
+          <SquareArrowOutUpRight />
         </Button>
         <Button
-          size="base"
           variant="secondary"
           title={t("environments.surveys.copy_survey_link_to_clipboard")}
           aria-label={t("environments.surveys.copy_survey_link_to_clipboard")}
           onClick={() => {
             navigator.clipboard.writeText(surveyUrl);
             toast.success(t("common.copied_to_clipboard"));
-          }}
-          EndIcon={Copy}>
+          }}>
           {t("common.copy")}
+          <Copy />
         </Button>
         {survey.singleUse?.enabled && (
           <Button

@@ -1,5 +1,8 @@
 "use client";
 
+import { Button } from "@/modules/ui/components/button";
+import { ColorPicker } from "@/modules/ui/components/color-picker";
+import { FormControl, FormDescription, FormField, FormItem, FormLabel } from "@/modules/ui/components/form";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import * as Collapsible from "@radix-ui/react-collapsible";
 import { CheckIcon, SparklesIcon } from "lucide-react";
@@ -9,18 +12,15 @@ import { UseFormReturn } from "react-hook-form";
 import { cn } from "@formbricks/lib/cn";
 import { COLOR_DEFAULTS } from "@formbricks/lib/styling/constants";
 import { mixColor } from "@formbricks/lib/utils/colors";
-import { TProductStyling } from "@formbricks/types/product";
+import { TProjectStyling } from "@formbricks/types/project";
 import { TSurveyStyling } from "@formbricks/types/surveys/types";
-import { Button } from "@formbricks/ui/components/Button";
-import { ColorPicker } from "@formbricks/ui/components/ColorPicker";
-import { FormControl, FormDescription, FormField, FormItem, FormLabel } from "@formbricks/ui/components/Form";
 
 type FormStylingSettingsProps = {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   isSettingsPage?: boolean;
   disabled?: boolean;
-  form: UseFormReturn<TProductStyling | TSurveyStyling>;
+  form: UseFormReturn<TProjectStyling | TSurveyStyling>;
 };
 
 export const FormStylingSettings = ({
@@ -140,10 +140,10 @@ export const FormStylingSettings = ({
               type="button"
               variant="secondary"
               size="sm"
-              EndIcon={SparklesIcon}
               className="w-fit"
               onClick={() => suggestColors()}>
               {t("environments.surveys.edit.suggest_colors")}
+              <SparklesIcon />
             </Button>
           </div>
 

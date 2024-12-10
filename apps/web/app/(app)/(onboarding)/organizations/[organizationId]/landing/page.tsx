@@ -1,12 +1,12 @@
 import { LandingSidebar } from "@/app/(app)/(onboarding)/organizations/[organizationId]/landing/components/landing-sidebar";
+import { authOptions } from "@/modules/auth/lib/authOptions";
 import { getEnterpriseLicense } from "@/modules/ee/license-check/lib/utils";
+import { Header } from "@/modules/ui/components/header";
 import { getServerSession } from "next-auth";
 import { getTranslations } from "next-intl/server";
 import { notFound, redirect } from "next/navigation";
-import { authOptions } from "@formbricks/lib/authOptions";
 import { getOrganization, getOrganizationsByUserId } from "@formbricks/lib/organization/service";
 import { getUser } from "@formbricks/lib/user/service";
-import { Header } from "@formbricks/ui/components/Header";
 
 const Page = async (props) => {
   const params = await props.params;
@@ -39,8 +39,8 @@ const Page = async (props) => {
       <div className="flex-1">
         <div className="flex h-full flex-col items-center justify-center space-y-12">
           <Header
-            title={t("organizations.landing.no_products_warning_title")}
-            subtitle={t("organizations.landing.no_products_warning_subtitle")}
+            title={t("organizations.landing.no_projects_warning_title")}
+            subtitle={t("organizations.landing.no_projects_warning_subtitle")}
           />
         </div>
       </div>

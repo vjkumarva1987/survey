@@ -1,6 +1,10 @@
 "use client";
 
 import { inviteOrganizationMemberAction } from "@/app/setup/organization/[organizationId]/invite/actions";
+import { Alert, AlertDescription, AlertTitle } from "@/modules/ui/components/alert";
+import { Button } from "@/modules/ui/components/button";
+import { FormControl, FormError, FormField, FormItem, FormProvider } from "@/modules/ui/components/form";
+import { Input } from "@/modules/ui/components/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { PlusIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -9,10 +13,6 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-hot-toast";
 import { TInviteMembersFormSchema, ZInviteMembersFormSchema } from "@formbricks/types/invites";
-import { Alert, AlertDescription, AlertTitle } from "@formbricks/ui/components/Alert";
-import { Button } from "@formbricks/ui/components/Button";
-import { FormControl, FormError, FormField, FormItem, FormProvider } from "@formbricks/ui/components/Form";
-import { Input } from "@formbricks/ui/components/Input";
 
 interface InviteMembersProps {
   IS_SMTP_CONFIGURED: boolean;
@@ -95,11 +95,8 @@ export const InviteMembers = ({ IS_SMTP_CONFIGURED, organizationId }: InviteMemb
             />
           ))}
 
-          <Button
-            variant="minimal"
-            onClick={() => setMembersCount((count) => count + 1)}
-            type="button"
-            StartIcon={PlusIcon}>
+          <Button variant="ghost" onClick={() => setMembersCount((count) => count + 1)} type="button">
+            <PlusIcon />
             {t("setup.invite.add_another_member")}
           </Button>
 
@@ -113,7 +110,7 @@ export const InviteMembers = ({ IS_SMTP_CONFIGURED, organizationId }: InviteMemb
               disabled={isSubmitting}>
               {t("setup.invite.continue")}
             </Button>
-            <Button type="button" variant="minimal" className="flex w-80 justify-center" onClick={handleSkip}>
+            <Button type="button" variant="ghost" className="flex w-80 justify-center" onClick={handleSkip}>
               {t("setup.invite.skip")}
             </Button>
           </div>

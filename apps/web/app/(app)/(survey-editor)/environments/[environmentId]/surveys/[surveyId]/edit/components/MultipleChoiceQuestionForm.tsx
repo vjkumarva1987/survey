@@ -2,6 +2,9 @@
 
 import { findOptionUsedInLogic } from "@/app/(app)/(survey-editor)/environments/[environmentId]/surveys/[surveyId]/edit/lib/utils";
 import { QuestionFormInput } from "@/modules/surveys/components/QuestionFormInput";
+import { Button } from "@/modules/ui/components/button";
+import { Label } from "@/modules/ui/components/label";
+import { ShuffleOptionSelect } from "@/modules/ui/components/shuffle-option-select";
 import { DndContext } from "@dnd-kit/core";
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
@@ -11,7 +14,7 @@ import { useTranslations } from "next-intl";
 import { type JSX, useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { createI18nString, extractLanguageCodes } from "@formbricks/lib/i18n/utils";
-import { TAttributeClass } from "@formbricks/types/attribute-classes";
+import { TContactAttributeKey } from "@formbricks/types/contact-attribute-key";
 import {
   TI18nString,
   TShuffleOption,
@@ -20,9 +23,6 @@ import {
   TSurveyQuestionTypeEnum,
 } from "@formbricks/types/surveys/types";
 import { TUserLocale } from "@formbricks/types/user";
-import { Button } from "@formbricks/ui/components/Button";
-import { Label } from "@formbricks/ui/components/Label";
-import { ShuffleOptionSelect } from "@formbricks/ui/components/ShuffleOptionSelect";
 import { QuestionOptionChoice } from "./QuestionOptionChoice";
 
 interface MultipleChoiceQuestionFormProps {
@@ -34,7 +34,7 @@ interface MultipleChoiceQuestionFormProps {
   selectedLanguageCode: string;
   setSelectedLanguageCode: (language: string) => void;
   isInvalid: boolean;
-  attributeClasses: TAttributeClass[];
+  contactAttributeKeys: TContactAttributeKey[];
   locale: TUserLocale;
 }
 
@@ -46,7 +46,7 @@ export const MultipleChoiceQuestionForm = ({
   localSurvey,
   selectedLanguageCode,
   setSelectedLanguageCode,
-  attributeClasses,
+  contactAttributeKeys,
   locale,
 }: MultipleChoiceQuestionFormProps): JSX.Element => {
   const t = useTranslations();
@@ -180,7 +180,7 @@ export const MultipleChoiceQuestionForm = ({
         updateQuestion={updateQuestion}
         selectedLanguageCode={selectedLanguageCode}
         setSelectedLanguageCode={setSelectedLanguageCode}
-        attributeClasses={attributeClasses}
+        contactAttributeKeys={contactAttributeKeys}
         locale={locale}
       />
 
@@ -198,7 +198,7 @@ export const MultipleChoiceQuestionForm = ({
                 updateQuestion={updateQuestion}
                 selectedLanguageCode={selectedLanguageCode}
                 setSelectedLanguageCode={setSelectedLanguageCode}
-                attributeClasses={attributeClasses}
+                contactAttributeKeys={contactAttributeKeys}
                 locale={locale}
               />
             </div>
@@ -207,7 +207,7 @@ export const MultipleChoiceQuestionForm = ({
         {question.subheader === undefined && (
           <Button
             size="sm"
-            variant="minimal"
+            variant="secondary"
             className="mt-3"
             type="button"
             onClick={() => {
@@ -248,7 +248,7 @@ export const MultipleChoiceQuestionForm = ({
               updateQuestion(questionIdx, { choices: newChoices });
             }}>
             <SortableContext items={question.choices} strategy={verticalListSortingStrategy}>
-              <div className="flex flex-col" ref={parent}>
+              <div className="flex flex-col gap-2" ref={parent}>
                 {question.choices &&
                   question.choices.map((choice, choiceIdx) => (
                     <QuestionOptionChoice
@@ -267,7 +267,7 @@ export const MultipleChoiceQuestionForm = ({
                       question={question}
                       updateQuestion={updateQuestion}
                       surveyLanguageCodes={surveyLanguageCodes}
-                      attributeClasses={attributeClasses}
+                      contactAttributeKeys={contactAttributeKeys}
                       locale={locale}
                     />
                   ))}
@@ -276,13 +276,13 @@ export const MultipleChoiceQuestionForm = ({
           </DndContext>
           <div className="mt-2 flex items-center justify-between space-x-2">
             {question.choices.filter((c) => c.id === "other").length === 0 && (
-              <Button size="sm" variant="minimal" type="button" onClick={() => addOther()}>
+              <Button size="sm" variant="secondary" type="button" onClick={() => addOther()}>
                 {t("environments.surveys.edit.add_other")}
               </Button>
             )}
             <Button
               size="sm"
-              variant="minimal"
+              variant="secondary"
               type="button"
               onClick={() => {
                 updateQuestion(questionIdx, {

@@ -3,16 +3,16 @@
 import { getSurveysAction } from "@/app/(app)/environments/[environmentId]/surveys/actions";
 import { getFormattedFilters } from "@/app/(app)/environments/[environmentId]/surveys/lib/utils";
 import { TSurvey } from "@/app/(app)/environments/[environmentId]/surveys/types/surveys";
+import { Button } from "@/modules/ui/components/button";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { FORMBRICKS_SURVEYS_FILTERS_KEY_LS } from "@formbricks/lib/localStorage";
 import { TEnvironment } from "@formbricks/types/environment";
 import { wrapThrows } from "@formbricks/types/error-handlers";
-import { TProductConfigChannel } from "@formbricks/types/product";
+import { TProjectConfigChannel } from "@formbricks/types/project";
 import { TSurveyFilters } from "@formbricks/types/surveys/types";
 import { TUserLocale } from "@formbricks/types/user";
-import { Button } from "@formbricks/ui/components/Button";
 import { SurveyCard } from "./SurveyCard";
 import { SurveyFilters } from "./SurveyFilters";
 import { SurveyLoading } from "./SurveyLoading";
@@ -24,7 +24,7 @@ interface SurveysListProps {
   WEBAPP_URL: string;
   userId: string;
   surveysPerPage: number;
-  currentProductChannel: TProductConfigChannel;
+  currentProjectChannel: TProjectConfigChannel;
   locale: TUserLocale;
 }
 
@@ -43,7 +43,7 @@ export const SurveysList = ({
   WEBAPP_URL,
   userId,
   surveysPerPage: surveysLimit,
-  currentProductChannel,
+  currentProjectChannel,
   locale,
 }: SurveysListProps) => {
   const [surveys, setSurveys] = useState<TSurvey[]>([]);
@@ -101,7 +101,7 @@ export const SurveysList = ({
       };
       fetchInitialSurveys();
     }
-  }, [environment.id, surveysLimit, filters]);
+  }, [environment.id, surveysLimit, filters, isFilterInitialized]);
 
   const fetchNextPage = useCallback(async () => {
     setIsFetching(true);
@@ -138,7 +138,7 @@ export const SurveysList = ({
       <SurveyFilters
         surveyFilters={surveyFilters}
         setSurveyFilters={setSurveyFilters}
-        currentProductChannel={currentProductChannel}
+        currentProjectChannel={currentProjectChannel}
       />
       {surveys.length > 0 ? (
         <div>

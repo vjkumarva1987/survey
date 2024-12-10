@@ -1,15 +1,15 @@
 "use client";
 
 import { getFormattedErrorMessage } from "@/lib/utils/helper";
+import { Button } from "@/modules/ui/components/button";
+import { Tag } from "@/modules/ui/components/tag";
+import { TagsCombobox } from "@/modules/ui/components/tags-combobox";
 import { AlertCircleIcon, SettingsIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { TTag } from "@formbricks/types/tags";
-import { Button } from "@formbricks/ui/components/Button";
-import { Tag } from "@formbricks/ui/components/Tag";
-import { TagsCombobox } from "@formbricks/ui/components/TagsCombobox";
 import { createTagAction, createTagToResponseAction, deleteTagOnResponseAction } from "../actions";
 
 interface ResponseTagsWrapperProps {
@@ -62,11 +62,11 @@ export const ResponseTagsWrapper: React.FC<ResponseTagsWrapperProps> = ({
     <div className="flex items-center gap-3 border-t border-slate-200 px-6 py-4">
       {!isReadOnly && (
         <Button
-          variant="minimal"
+          variant="ghost"
           size="sm"
           className="cursor-pointer p-0"
           onClick={() => {
-            router.push(`/environments/${environmentId}/product/tags`);
+            router.push(`/environments/${environmentId}/project/tags`);
           }}>
           <SettingsIcon className="h-5 w-5 text-slate-500 hover:text-slate-600" />
         </Button>

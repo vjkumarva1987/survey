@@ -1,9 +1,10 @@
 import { type ZodIssue, z } from "zod";
+import { ZSurveyFollowUp } from "@formbricks/database/types/survey-follow-up";
 import { ZActionClass, ZActionClassNoCodeConfig } from "../action-classes";
-import { ZAttributes } from "../attributes";
-import { ZAllowedFileExtension, ZColor, ZId, ZPlacement } from "../common";
+import { ZAllowedFileExtension, ZColor, ZId, ZPlacement, getZSafeUrl } from "../common";
+import { ZContactAttributes } from "../contact-attribute";
 import { ZInsight } from "../insights";
-import { ZLanguage } from "../product";
+import { ZLanguage } from "../project";
 import { ZSegment } from "../segment";
 import { ZBaseStyling } from "../styling";
 import {
@@ -30,7 +31,7 @@ export const ZSurveyEndScreenCard = ZSurveyEndingBase.extend({
   headline: ZI18nString.optional(),
   subheader: ZI18nString.optional(),
   buttonLabel: ZI18nString.optional(),
-  buttonLink: z.string().url("Invalid Button Url in Ending card").optional(),
+  buttonLink: getZSafeUrl("Invalid Button Url in Ending card").optional(),
   imageUrl: z.string().optional(),
   videoUrl: z.string().optional(),
 });
@@ -39,7 +40,7 @@ export type TSurveyEndScreenCard = z.infer<typeof ZSurveyEndScreenCard>;
 
 export const ZSurveyRedirectUrlCard = ZSurveyEndingBase.extend({
   type: z.literal("redirectToUrl"),
-  url: z.string().url("Invalid Redirect Url in Ending card").optional(),
+  url: getZSafeUrl("Invalid Redirect Url").optional(),
   label: z.string().optional(),
 });
 
@@ -176,7 +177,7 @@ export const ZSurveyVariables = z.array(ZSurveyVariable);
 export type TSurveyVariable = z.infer<typeof ZSurveyVariable>;
 export type TSurveyVariables = z.infer<typeof ZSurveyVariables>;
 
-export const ZSurveyProductOverwrites = z.object({
+export const ZSurveyProjectOverwrites = z.object({
   brandColor: ZColor.nullish(),
   highlightBorderColor: ZColor.nullish(),
   placement: ZPlacement.nullish(),
@@ -184,7 +185,7 @@ export const ZSurveyProductOverwrites = z.object({
   darkOverlay: z.boolean().nullish(),
 });
 
-export type TSurveyProductOverwrites = z.infer<typeof ZSurveyProductOverwrites>;
+export type TSurveyProjectOverwrites = z.infer<typeof ZSurveyProjectOverwrites>;
 
 export const ZSurveyBackgroundBgType = z.enum(["animation", "color", "upload", "image"]);
 
@@ -480,6 +481,39 @@ export const ZSurveyOpenTextQuestion = ZSurveyQuestionBase.extend({
   longAnswer: z.boolean().optional(),
   inputType: ZSurveyOpenTextQuestionInputType.optional().default("text"),
   insightsEnabled: z.boolean().default(false).optional(),
+  charLimit: z.object({
+    enabled: z.boolean().default(false).optional(),
+    min: z.number().optional(),
+    max: z.number().optional(),
+  }),
+}).superRefine((data, ctx) => {
+  if (data.charLimit.enabled && data.charLimit.min === undefined && data.charLimit.max === undefined) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "Enter the values for either minimum or maximum field",
+    });
+  }
+
+  if (
+    (data.charLimit.min !== undefined && data.charLimit.min < 0) ||
+    (data.charLimit.max !== undefined && data.charLimit.max < 0)
+  ) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "The character limit values should be positive",
+    });
+  }
+
+  if (
+    data.charLimit.min !== undefined &&
+    data.charLimit.max !== undefined &&
+    data.charLimit.min > data.charLimit.max
+  ) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "Minimum value cannot be greater than the maximum value",
+    });
+  }
 });
 
 export type TSurveyOpenTextQuestion = z.infer<typeof ZSurveyOpenTextQuestion>;
@@ -616,7 +650,8 @@ export const ZSurveyRankingQuestion = ZSurveyQuestionBase.extend({
   type: z.literal(TSurveyQuestionTypeEnum.Ranking),
   choices: z
     .array(ZSurveyQuestionChoice)
-    .min(2, { message: "Ranking Question must have at least two options" }),
+    .min(2, { message: "Ranking Question must have at least two options" })
+    .max(25, { message: "Ranking Question can have at most 25 options" }),
   otherOptionPlaceholder: ZI18nString.optional(),
   shuffleOption: ZShuffleOption.optional(),
 });
@@ -769,11 +804,16 @@ export const ZSurvey = z
         });
       }
     }),
+    followUps: z.array(
+      ZSurveyFollowUp.extend({
+        deleted: z.boolean().optional(),
+      })
+    ),
     delay: z.number(),
     autoComplete: z.number().min(1, { message: "Response limit must be greater than 0" }).nullable(),
     runOnDate: z.date().nullable(),
     closeOnDate: z.date().nullable(),
-    productOverwrites: ZSurveyProductOverwrites.nullable(),
+    projectOverwrites: ZSurveyProjectOverwrites.nullable(),
     styling: ZSurveyStyling.nullable(),
     showLanguageSwitch: z.boolean().nullable(),
     surveyClosedMessage: ZSurveyClosedMessage.nullable(),
@@ -1156,6 +1196,52 @@ export const ZSurvey = z
         }
       }
     });
+
+    if (survey.followUps.length) {
+      survey.followUps
+        .filter((followUp) => !followUp.deleted)
+        .forEach((followUp, index) => {
+          if (followUp.action.properties.to) {
+            const validOptions = [
+              ...survey.questions
+                .filter((q) => {
+                  if (q.type === TSurveyQuestionTypeEnum.OpenText) {
+                    if (q.inputType === "email") {
+                      return true;
+                    }
+                  }
+
+                  if (q.type === TSurveyQuestionTypeEnum.ContactInfo) {
+                    return true;
+                  }
+
+                  return false;
+                })
+                .map((q) => q.id),
+              ...(survey.hiddenFields.fieldIds ?? []),
+            ];
+
+            if (validOptions.findIndex((option) => option === followUp.action.properties.to) === -1) {
+              ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                message: `The action in follow up ${String(index + 1)} has an invalid email field`,
+                path: ["followUps"],
+              });
+            }
+
+            if (followUp.trigger.type === "endings") {
+              // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- endingIds is always defined
+              if (!followUp.trigger.properties?.endingIds?.length) {
+                ctx.addIssue({
+                  code: z.ZodIssueCode.custom,
+                  message: `The trigger in follow up ${String(index + 1)} has no ending selected`,
+                  path: ["followUps"],
+                });
+              }
+            }
+          }
+        });
+    }
   });
 
 const isInvalidOperatorsForQuestionType = (
@@ -2111,7 +2197,19 @@ const validateLogic = (survey: TSurvey, questionIndex: number, logic: TSurveyLog
 
 // ZSurvey is a refinement, so to extend it to ZSurveyUpdateInput, we need to transform the innerType and then apply the same refinements.
 export const ZSurveyUpdateInput = ZSurvey.innerType()
-  .omit({ createdAt: true, updatedAt: true })
+  .omit({ createdAt: true, updatedAt: true, followUps: true })
+  .extend({
+    followUps: z
+      .array(
+        ZSurveyFollowUp.omit({ createdAt: true, updatedAt: true }).and(
+          z.object({
+            createdAt: z.coerce.date(),
+            updatedAt: z.coerce.date(),
+          })
+        )
+      )
+      .default([]),
+  })
   .and(
     z.object({
       createdAt: z.coerce.date(),
@@ -2134,8 +2232,9 @@ export const ZSurveyCreateInput = makeSchemaOptional(ZSurvey.innerType())
     id: true,
     createdAt: true,
     updatedAt: true,
-    productOverwrites: true,
+    projectOverwrites: true,
     languages: true,
+    followUps: true,
   })
   .extend({
     name: z.string(), // Keep name required
@@ -2146,6 +2245,7 @@ export const ZSurveyCreateInput = makeSchemaOptional(ZSurvey.innerType())
     }),
     endings: ZSurveyEndings.default([]),
     type: ZSurveyType.default("link"),
+    followUps: z.array(ZSurveyFollowUp.omit({ createdAt: true, updatedAt: true })).default([]),
   })
   .superRefine(ZSurvey._def.effect.type === "refinement" ? ZSurvey._def.effect.refinement : () => null);
 
@@ -2160,7 +2260,7 @@ export interface TSurveyDates {
 
 export type TSurveyCreateInput = z.input<typeof ZSurveyCreateInput>;
 
-export type TSurveyEditorTabs = "questions" | "settings" | "styling";
+export type TSurveyEditorTabs = "questions" | "settings" | "styling" | "followUps";
 
 export const ZSurveyQuestionSummaryOpenText = z.object({
   type: z.literal("openText"),
@@ -2171,13 +2271,13 @@ export const ZSurveyQuestionSummaryOpenText = z.object({
       id: z.string(),
       updatedAt: z.date(),
       value: z.string(),
-      person: z
+      contact: z
         .object({
           id: ZId,
           userId: z.string(),
         })
         .nullable(),
-      personAttributes: ZAttributes.nullable(),
+      contactAttributes: ZContactAttributes.nullable(),
     })
   ),
   insights: z.array(ZInsight),
@@ -2200,13 +2300,13 @@ export const ZSurveyQuestionSummaryMultipleChoice = z.object({
         .array(
           z.object({
             value: z.string(),
-            person: z
+            contact: z
               .object({
                 id: ZId,
                 userId: z.string(),
               })
               .nullable(),
-            personAttributes: ZAttributes.nullable(),
+            contactAttributes: ZContactAttributes.nullable(),
           })
         )
         .optional(),
@@ -2318,13 +2418,13 @@ export const ZSurveyQuestionSummaryDate = z.object({
       id: z.string(),
       updatedAt: z.date(),
       value: z.string(),
-      person: z
+      contact: z
         .object({
           id: ZId,
           userId: z.string(),
         })
         .nullable(),
-      personAttributes: ZAttributes.nullable(),
+      contactAttributes: ZContactAttributes.nullable(),
     })
   ),
 });
@@ -2340,13 +2440,13 @@ export const ZSurveyQuestionSummaryFileUpload = z.object({
       id: z.string(),
       updatedAt: z.date(),
       value: z.array(z.string()),
-      person: z
+      contact: z
         .object({
           id: ZId,
           userId: z.string(),
         })
         .nullable(),
-      personAttributes: ZAttributes.nullable(),
+      contactAttributes: ZContactAttributes.nullable(),
     })
   ),
 });
@@ -2392,13 +2492,13 @@ export const ZSurveyQuestionSummaryHiddenFields = z.object({
     z.object({
       updatedAt: z.date(),
       value: z.string(),
-      person: z
+      contact: z
         .object({
           id: ZId,
           userId: z.string(),
         })
         .nullable(),
-      personAttributes: ZAttributes.nullable(),
+      contactAttributes: ZContactAttributes.nullable(),
     })
   ),
 });
@@ -2414,13 +2514,13 @@ export const ZSurveyQuestionSummaryAddress = z.object({
       id: z.string(),
       updatedAt: z.date(),
       value: z.array(z.string()),
-      person: z
+      contact: z
         .object({
           id: ZId,
           userId: z.string(),
         })
         .nullable(),
-      personAttributes: ZAttributes.nullable(),
+      contactAttributes: ZContactAttributes.nullable(),
     })
   ),
 });
@@ -2436,13 +2536,13 @@ export const ZSurveyQuestionSummaryContactInfo = z.object({
       id: z.string(),
       updatedAt: z.date(),
       value: z.array(z.string()),
-      person: z
+      contact: z
         .object({
           id: ZId,
           userId: z.string(),
         })
         .nullable(),
-      personAttributes: ZAttributes.nullable(),
+      contactAttributes: ZContactAttributes.nullable(),
     })
   ),
 });
@@ -2462,13 +2562,13 @@ export const ZSurveyQuestionSummaryRanking = z.object({
         .array(
           z.object({
             value: z.string(),
-            person: z
+            contact: z
               .object({
                 id: ZId,
                 userId: z.string(),
               })
               .nullable(),
-            personAttributes: ZAttributes.nullable(),
+            contactAttributes: ZContactAttributes.nullable(),
           })
         )
         .optional(),

@@ -3,8 +3,9 @@
 import { AddIntegrationModal } from "@/app/(app)/environments/[environmentId]/integrations/notion/components/AddIntegrationModal";
 import { ManageIntegration } from "@/app/(app)/environments/[environmentId]/integrations/notion/components/ManageIntegration";
 import notionLogo from "@/images/notion.png";
+import { ConnectIntegration } from "@/modules/ui/components/connect-integration";
 import { useState } from "react";
-import { TAttributeClass } from "@formbricks/types/attribute-classes";
+import { TContactAttributeKey } from "@formbricks/types/contact-attribute-key";
 import { TEnvironment } from "@formbricks/types/environment";
 import {
   TIntegrationNotion,
@@ -13,7 +14,6 @@ import {
 } from "@formbricks/types/integration/notion";
 import { TSurvey } from "@formbricks/types/surveys/types";
 import { TUserLocale } from "@formbricks/types/user";
-import { ConnectIntegration } from "@formbricks/ui/components/ConnectIntegration";
 import { authorize } from "../lib/notion";
 
 interface NotionWrapperProps {
@@ -23,7 +23,7 @@ interface NotionWrapperProps {
   webAppUrl: string;
   surveys: TSurvey[];
   databasesArray: TIntegrationNotionDatabase[];
-  attributeClasses: TAttributeClass[];
+  contactAttributeKeys: TContactAttributeKey[];
   locale: TUserLocale;
 }
 
@@ -34,7 +34,7 @@ export const NotionWrapper = ({
   webAppUrl,
   surveys,
   databasesArray,
-  attributeClasses,
+  contactAttributeKeys,
   locale,
 }: NotionWrapperProps) => {
   const [isModalOpen, setModalOpen] = useState(false);
@@ -65,7 +65,7 @@ export const NotionWrapper = ({
             notionIntegration={notionIntegration}
             databases={databasesArray}
             selectedIntegration={selectedIntegration}
-            attributeClasses={attributeClasses}
+            contactAttributeKeys={contactAttributeKeys}
             locale={locale}
           />
           <ManageIntegration

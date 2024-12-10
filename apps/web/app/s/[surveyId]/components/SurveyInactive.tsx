@@ -1,9 +1,9 @@
+import { Button } from "@/modules/ui/components/button";
 import { CheckCircle2Icon, HelpCircleIcon, PauseCircleIcon } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import Image from "next/image";
 import Link from "next/link";
 import { TSurveyClosedMessage } from "@formbricks/types/surveys/types";
-import { Button } from "@formbricks/ui/components/Button";
 import footerLogo from "../lib/footerlogo.svg";
 
 export const SurveyInactive = async ({
@@ -42,8 +42,8 @@ export const SurveyInactive = async ({
             : descriptions[status]}
         </p>
         {!(status === "completed" && surveyClosedMessage) && status !== "link invalid" && (
-          <Button className="mt-2" href="https://formbricks.com">
-            {t("s.create_your_own")}
+          <Button className="mt-2" asChild>
+            <Link href="https://formbricks.com">{t("s.create_your_own")}</Link>
           </Button>
         )}
       </div>

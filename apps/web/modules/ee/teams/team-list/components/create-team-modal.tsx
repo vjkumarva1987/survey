@@ -2,16 +2,16 @@
 
 import { getFormattedErrorMessage } from "@/lib/utils/helper";
 import { createTeamAction } from "@/modules/ee/teams/team-list/actions";
+import { Button } from "@/modules/ui/components/button";
+import { Input } from "@/modules/ui/components/input";
+import { Label } from "@/modules/ui/components/label";
+import { Modal } from "@/modules/ui/components/modal";
+import { H4 } from "@/modules/ui/components/typography";
 import { UsersIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import toast from "react-hot-toast";
-import { Button } from "@formbricks/ui/components/Button";
-import { Input } from "@formbricks/ui/components/Input";
-import { Label } from "@formbricks/ui/components/Label";
-import { Modal } from "@formbricks/ui/components/Modal";
-import { H4 } from "@formbricks/ui/components/Typography";
 
 interface CreateTeamModalProps {
   open: boolean;
@@ -82,7 +82,7 @@ export const CreateTeamModal = ({ open, setOpen, organizationId, onCreate }: Cre
             }}>
             {t("common.cancel")}
           </Button>
-          <Button variant="primary" disabled={!teamName || isLoading} loading={isLoading} type="submit">
+          <Button disabled={!teamName || isLoading} loading={isLoading} type="submit">
             {t("environments.settings.teams.create")}
           </Button>
         </div>

@@ -1,4 +1,6 @@
 import { SingleResponseCard } from "@/modules/analysis/components/SingleResponseCard";
+import { Button } from "@/modules/ui/components/button";
+import { Modal } from "@/modules/ui/components/modal";
 import { ChevronLeft, ChevronRight, XIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { TEnvironment } from "@formbricks/types/environment";
@@ -6,8 +8,6 @@ import { TResponse } from "@formbricks/types/responses";
 import { TSurvey } from "@formbricks/types/surveys/types";
 import { TTag } from "@formbricks/types/tags";
 import { TUser, TUserLocale } from "@formbricks/types/user";
-import { Button } from "@formbricks/ui/components/Button";
-import { Modal } from "@formbricks/ui/components/Modal";
 
 interface ResponseCardModalProps {
   responses: TResponse[];
@@ -85,18 +85,18 @@ export const ResponseCardModal = ({
             <Button
               onClick={handleBack}
               disabled={currentIndex === 0}
-              variant="minimal"
+              variant="ghost"
               className="border bg-white p-2">
               <ChevronLeft className="h-5 w-5" />
             </Button>
             <Button
               onClick={handleNext}
               disabled={currentIndex === responses.length - 1}
-              variant="minimal"
+              variant="ghost"
               className="border bg-white p-2">
               <ChevronRight className="h-5 w-5" />
             </Button>
-            <Button className="border bg-white p-2" onClick={handleClose} variant="minimal">
+            <Button className="border bg-white p-2" onClick={handleClose} variant="ghost">
               <XIcon className="h-5 w-5" />
             </Button>
           </div>

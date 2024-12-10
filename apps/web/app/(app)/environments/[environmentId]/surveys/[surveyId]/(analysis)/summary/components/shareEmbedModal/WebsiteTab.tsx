@@ -1,14 +1,14 @@
 "use client";
 
+import { AdvancedOptionToggle } from "@/modules/ui/components/advanced-option-toggle";
+import { Button } from "@/modules/ui/components/button";
+import { CodeBlock } from "@/modules/ui/components/code-block";
+import { OptionsSwitch } from "@/modules/ui/components/options-switch";
 import { CopyIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { useState } from "react";
 import toast from "react-hot-toast";
-import { AdvancedOptionToggle } from "@formbricks/ui/components/AdvancedOptionToggle";
-import { Button } from "@formbricks/ui/components/Button";
-import { CodeBlock } from "@formbricks/ui/components/CodeBlock";
-import { OptionsSwitch } from "@formbricks/ui/components/OptionsSwitch";
 
 export const WebsiteTab = ({ surveyUrl, environmentId }) => {
   const [selectedTab, setSelectedTab] = useState("static");
@@ -56,9 +56,9 @@ const StaticTab = ({ surveyUrl }) => {
           onClick={() => {
             navigator.clipboard.writeText(iframeCode);
             toast.success(t("environments.surveys.summary.embed_code_copied_to_clipboard"));
-          }}
-          EndIcon={CopyIcon}>
+          }}>
           {t("common.copy_code")}
+          <CopyIcon />
         </Button>
       </div>
       <div className="prose prose-slate max-w-full">
@@ -94,7 +94,7 @@ const PopupTab = ({ environmentId }) => {
         <li>
           {t("common.follow_these")}{" "}
           <Link
-            href={`/environments/${environmentId}/product/website-connection`}
+            href={`/environments/${environmentId}/project/website-connection`}
             target="_blank"
             className="decoration-brand-dark font-medium underline underline-offset-2">
             {t("environments.surveys.summary.setup_instructions")}

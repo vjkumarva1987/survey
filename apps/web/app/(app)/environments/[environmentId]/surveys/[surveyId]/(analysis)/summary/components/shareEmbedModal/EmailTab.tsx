@@ -1,13 +1,13 @@
 "use client";
 
+import { Button } from "@/modules/ui/components/button";
+import { CodeBlock } from "@/modules/ui/components/code-block";
+import { LoadingSpinner } from "@/modules/ui/components/loading-spinner";
 import { Code2Icon, CopyIcon, MailIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { AuthenticationError } from "@formbricks/types/errors";
-import { Button } from "@formbricks/ui/components/Button";
-import { CodeBlock } from "@formbricks/ui/components/CodeBlock";
-import { LoadingSpinner } from "@formbricks/ui/components/LoadingSpinner";
 import { getEmailHtmlAction, sendEmbedSurveyPreviewEmailAction } from "../../actions";
 
 interface EmailTabProps {
@@ -61,9 +61,9 @@ export const EmailTab = ({ surveyId, email }: EmailTabProps) => {
               toast.success(t("environments.surveys.summary.embed_code_copied_to_clipboard"));
               navigator.clipboard.writeText(emailHtml);
             }}
-            className="shrink-0"
-            EndIcon={CopyIcon}>
+            className="shrink-0">
             {t("common.copy_code")}
+            <CopyIcon />
           </Button>
         ) : (
           <>
@@ -72,9 +72,9 @@ export const EmailTab = ({ surveyId, email }: EmailTabProps) => {
               title="send preview email"
               aria-label="send preview email"
               onClick={() => sendPreviewEmail()}
-              EndIcon={MailIcon}
               className="shrink-0">
               {t("environments.surveys.summary.send_preview")}
+              <MailIcon />
             </Button>
           </>
         )}
@@ -84,11 +84,11 @@ export const EmailTab = ({ surveyId, email }: EmailTabProps) => {
           onClick={() => {
             setShowEmbed(!showEmbed);
           }}
-          EndIcon={Code2Icon}
           className="shrink-0">
           {showEmbed
             ? t("environments.surveys.summary.hide_embed_code")
             : t("environments.surveys.summary.view_embed_code")}
+          <Code2Icon />
         </Button>
       </div>
       {showEmbed ? (

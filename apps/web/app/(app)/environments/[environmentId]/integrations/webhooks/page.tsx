@@ -2,11 +2,14 @@ import { AddWebhookButton } from "@/app/(app)/environments/[environmentId]/integ
 import { WebhookRowData } from "@/app/(app)/environments/[environmentId]/integrations/webhooks/components/WebhookRowData";
 import { WebhookTable } from "@/app/(app)/environments/[environmentId]/integrations/webhooks/components/WebhookTable";
 import { WebhookTableHeading } from "@/app/(app)/environments/[environmentId]/integrations/webhooks/components/WebhookTableHeading";
-import { getProductPermissionByUserId } from "@/modules/ee/teams/lib/roles";
+import { authOptions } from "@/modules/auth/lib/authOptions";
+import { getProjectPermissionByUserId } from "@/modules/ee/teams/lib/roles";
 import { getTeamPermissionFlags } from "@/modules/ee/teams/utils/teams";
+import { GoBackButton } from "@/modules/ui/components/go-back-button";
+import { PageContentWrapper } from "@/modules/ui/components/page-content-wrapper";
+import { PageHeader } from "@/modules/ui/components/page-header";
 import { getServerSession } from "next-auth";
 import { getTranslations } from "next-intl/server";
-import { authOptions } from "@formbricks/lib/authOptions";
 import { getEnvironment } from "@formbricks/lib/environment/service";
 import { getMembershipByUserIdOrganizationId } from "@formbricks/lib/membership/service";
 import { getAccessFlags } from "@formbricks/lib/membership/utils";
@@ -14,9 +17,6 @@ import { getOrganizationByEnvironmentId } from "@formbricks/lib/organization/ser
 import { getSurveys } from "@formbricks/lib/survey/service";
 import { findMatchingLocale } from "@formbricks/lib/utils/locale";
 import { getWebhooks } from "@formbricks/lib/webhook/service";
-import { GoBackButton } from "@formbricks/ui/components/GoBackButton";
-import { PageContentWrapper } from "@formbricks/ui/components/PageContentWrapper";
-import { PageHeader } from "@formbricks/ui/components/PageHeader";
 
 const Page = async (props) => {
   const params = await props.params;
@@ -44,9 +44,9 @@ const Page = async (props) => {
   const currentUserMembership = await getMembershipByUserIdOrganizationId(session?.user.id, organization.id);
   const { isMember } = getAccessFlags(currentUserMembership?.role);
 
-  const productPermission = await getProductPermissionByUserId(session?.user.id, environment?.productId);
+  const projectPermission = await getProjectPermissionByUserId(session?.user.id, environment?.projectId);
 
-  const { hasReadAccess } = getTeamPermissionFlags(productPermission);
+  const { hasReadAccess } = getTeamPermissionFlags(projectPermission);
 
   const isReadOnly = isMember && hasReadAccess;
 

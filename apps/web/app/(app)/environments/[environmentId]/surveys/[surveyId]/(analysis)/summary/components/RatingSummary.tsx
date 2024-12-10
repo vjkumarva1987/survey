@@ -1,8 +1,10 @@
 import { convertFloatToNDecimal } from "@/app/(app)/environments/[environmentId]/surveys/[surveyId]/(analysis)/summary/lib/utils";
+import { ProgressBar } from "@/modules/ui/components/progress-bar";
+import { RatingResponse } from "@/modules/ui/components/rating-response";
 import { CircleSlash2, SmileIcon, StarIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useMemo } from "react";
-import { TAttributeClass } from "@formbricks/types/attribute-classes";
+import { TContactAttributeKey } from "@formbricks/types/contact-attribute-key";
 import {
   TI18nString,
   TSurvey,
@@ -11,14 +13,12 @@ import {
   TSurveyQuestionTypeEnum,
 } from "@formbricks/types/surveys/types";
 import { TUserLocale } from "@formbricks/types/user";
-import { ProgressBar } from "@formbricks/ui/components/ProgressBar";
-import { RatingResponse } from "@formbricks/ui/components/RatingResponse";
 import { QuestionSummaryHeader } from "./QuestionSummaryHeader";
 
 interface RatingSummaryProps {
   questionSummary: TSurveyQuestionSummaryRating;
   survey: TSurvey;
-  attributeClasses: TAttributeClass[];
+  contactAttributeKeys: TContactAttributeKey[];
   setFilter: (
     questionId: TSurveyQuestionId,
     label: TI18nString,
@@ -32,7 +32,7 @@ interface RatingSummaryProps {
 export const RatingSummary = ({
   questionSummary,
   survey,
-  attributeClasses,
+  contactAttributeKeys,
   setFilter,
   locale,
 }: RatingSummaryProps) => {
@@ -49,7 +49,7 @@ export const RatingSummary = ({
       <QuestionSummaryHeader
         questionSummary={questionSummary}
         survey={survey}
-        attributeClasses={attributeClasses}
+        contactAttributeKeys={contactAttributeKeys}
         locale={locale}
         additionalInfo={
           <div className="flex items-center space-x-2 rounded-lg bg-slate-100 p-2">

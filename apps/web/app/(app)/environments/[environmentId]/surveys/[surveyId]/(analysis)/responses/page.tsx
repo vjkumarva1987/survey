@@ -3,12 +3,14 @@ import { ResponsePage } from "@/app/(app)/environments/[environmentId]/surveys/[
 import { EnableInsightsBanner } from "@/app/(app)/environments/[environmentId]/surveys/[surveyId]/(analysis)/summary/components/EnableInsightsBanner";
 import { SurveyAnalysisCTA } from "@/app/(app)/environments/[environmentId]/surveys/[surveyId]/(analysis)/summary/components/SurveyAnalysisCTA";
 import { needsInsightsGeneration } from "@/app/(app)/environments/[environmentId]/surveys/[surveyId]/(analysis)/summary/lib/utils";
-import { getIsAIEnabled } from "@/app/lib/utils";
-import { getProductPermissionByUserId } from "@/modules/ee/teams/lib/roles";
+import { authOptions } from "@/modules/auth/lib/authOptions";
+import { getIsAIEnabled } from "@/modules/ee/license-check/lib/utils";
+import { getProjectPermissionByUserId } from "@/modules/ee/teams/lib/roles";
 import { getTeamPermissionFlags } from "@/modules/ee/teams/utils/teams";
+import { PageContentWrapper } from "@/modules/ui/components/page-content-wrapper";
+import { PageHeader } from "@/modules/ui/components/page-header";
 import { getServerSession } from "next-auth";
 import { getTranslations } from "next-intl/server";
-import { authOptions } from "@formbricks/lib/authOptions";
 import {
   MAX_RESPONSES_FOR_INSIGHT_GENERATION,
   RESPONSES_PER_PAGE,
@@ -18,14 +20,12 @@ import { getEnvironment } from "@formbricks/lib/environment/service";
 import { getMembershipByUserIdOrganizationId } from "@formbricks/lib/membership/service";
 import { getAccessFlags } from "@formbricks/lib/membership/utils";
 import { getOrganizationByEnvironmentId } from "@formbricks/lib/organization/service";
-import { getProductByEnvironmentId } from "@formbricks/lib/product/service";
+import { getProjectByEnvironmentId } from "@formbricks/lib/project/service";
 import { getResponseCountBySurveyId } from "@formbricks/lib/response/service";
 import { getSurvey } from "@formbricks/lib/survey/service";
 import { getTagsByEnvironmentId } from "@formbricks/lib/tag/service";
 import { getUser } from "@formbricks/lib/user/service";
 import { findMatchingLocale } from "@formbricks/lib/utils/locale";
-import { PageContentWrapper } from "@formbricks/ui/components/PageContentWrapper";
-import { PageHeader } from "@formbricks/ui/components/PageHeader";
 
 const Page = async (props) => {
   const params = await props.params;
@@ -45,9 +45,9 @@ const Page = async (props) => {
   if (!survey) {
     throw new Error(t("common.survey_not_found"));
   }
-  const product = await getProductByEnvironmentId(environment.id);
-  if (!product) {
-    throw new Error(t("common.product_not_found"));
+  const project = await getProjectByEnvironmentId(environment.id);
+  if (!project) {
+    throw new Error(t("common.project_not_found"));
   }
 
   const user = await getUser(session.user.id);
@@ -66,7 +66,7 @@ const Page = async (props) => {
 
   const { isMember } = getAccessFlags(currentUserMembership?.role);
 
-  const permission = await getProductPermissionByUserId(session.user.id, product.id);
+  const permission = await getProjectPermissionByUserId(session.user.id, project.id);
   const { hasReadAccess } = getTeamPermissionFlags(permission);
 
   const isReadOnly = isMember && hasReadAccess;

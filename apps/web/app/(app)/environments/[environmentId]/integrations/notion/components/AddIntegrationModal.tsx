@@ -5,6 +5,10 @@ import {
   UNSUPPORTED_TYPES_BY_NOTION,
 } from "@/app/(app)/environments/[environmentId]/integrations/notion/constants";
 import NotionLogo from "@/images/notion.png";
+import { Button } from "@/modules/ui/components/button";
+import { DropdownSelector } from "@/modules/ui/components/dropdown-selector";
+import { Label } from "@/modules/ui/components/label";
+import { Modal } from "@/modules/ui/components/modal";
 import { PlusIcon, XIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
@@ -15,7 +19,7 @@ import { getLocalizedValue } from "@formbricks/lib/i18n/utils";
 import { structuredClone } from "@formbricks/lib/pollyfills/structuredClone";
 import { getQuestionTypes } from "@formbricks/lib/utils/questions";
 import { replaceHeadlineRecall } from "@formbricks/lib/utils/recall";
-import { TAttributeClass } from "@formbricks/types/attribute-classes";
+import { TContactAttributeKey } from "@formbricks/types/contact-attribute-key";
 import { TIntegrationInput } from "@formbricks/types/integration";
 import {
   TIntegrationNotion,
@@ -24,10 +28,6 @@ import {
 } from "@formbricks/types/integration/notion";
 import { TSurvey, TSurveyQuestionTypeEnum } from "@formbricks/types/surveys/types";
 import { TUserLocale } from "@formbricks/types/user";
-import { Button } from "@formbricks/ui/components/Button";
-import { DropdownSelector } from "@formbricks/ui/components/DropdownSelector";
-import { Label } from "@formbricks/ui/components/Label";
-import { Modal } from "@formbricks/ui/components/Modal";
 
 interface AddIntegrationModalProps {
   environmentId: string;
@@ -37,7 +37,7 @@ interface AddIntegrationModalProps {
   notionIntegration: TIntegrationNotion;
   databases: TIntegrationNotionDatabase[];
   selectedIntegration: (TIntegrationNotionConfigData & { index: number }) | null;
-  attributeClasses: TAttributeClass[];
+  contactAttributeKeys: TContactAttributeKey[];
   locale: TUserLocale;
 }
 
@@ -49,7 +49,7 @@ export const AddIntegrationModal = ({
   notionIntegration,
   databases,
   selectedIntegration,
-  attributeClasses,
+  contactAttributeKeys,
   locale,
 }: AddIntegrationModalProps) => {
   const t = useTranslations();
@@ -116,7 +116,7 @@ export const AddIntegrationModal = ({
 
   const questionItems = useMemo(() => {
     const questions = selectedSurvey
-      ? replaceHeadlineRecall(selectedSurvey, "default", attributeClasses)?.questions.map((q) => ({
+      ? replaceHeadlineRecall(selectedSurvey, "default", contactAttributeKeys)?.questions.map((q) => ({
           id: q.id,
           name: getLocalizedValue(q.headline, "default"),
           type: q.type,
@@ -144,8 +144,15 @@ export const AddIntegrationModal = ({
         type: TSurveyQuestionTypeEnum.OpenText,
       },
     ];
+    const createdAt = [
+      {
+        id: "createdAt",
+        name: t("common.created_at"),
+        type: TSurveyQuestionTypeEnum.OpenText,
+      },
+    ];
 
-    return [...questions, ...variables, ...hiddenFields, ...Metadata];
+    return [...questions, ...variables, ...hiddenFields, ...Metadata, ...createdAt];
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedSurvey?.id]);
 
@@ -533,7 +540,7 @@ export const AddIntegrationModal = ({
               {selectedIntegration ? (
                 <Button
                   type="button"
-                  variant="warn"
+                  variant="destructive"
                   loading={isDeleting}
                   onClick={() => {
                     deleteLink();
@@ -543,7 +550,7 @@ export const AddIntegrationModal = ({
               ) : (
                 <Button
                   type="button"
-                  variant="minimal"
+                  variant="ghost"
                   onClick={() => {
                     setOpen(false);
                     resetForm();

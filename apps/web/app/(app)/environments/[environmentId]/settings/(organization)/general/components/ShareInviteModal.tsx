@@ -1,11 +1,11 @@
 "use client";
 
+import { Button } from "@/modules/ui/components/button";
+import { Modal } from "@/modules/ui/components/modal";
 import { CheckIcon, CopyIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRef } from "react";
 import toast from "react-hot-toast";
-import { Button } from "@formbricks/ui/components/Button";
-import { Modal } from "@formbricks/ui/components/Modal";
 
 interface ShareInviteModalProps {
   inviteToken: string;
@@ -63,9 +63,9 @@ export const ShareInviteModal = ({ inviteToken, open, setOpen }: ShareInviteModa
                 toast.success(t("common.copied_to_clipboard"));
               }}
               title={t("environments.settings.general.copy_invite_link_to_clipboard")}
-              aria-label="Copy invite link to clipboard"
-              EndIcon={CopyIcon}>
+              aria-label="Copy invite link to clipboard">
               {t("common.copy_link")}
+              <CopyIcon />
             </Button>
           </div>
         </div>

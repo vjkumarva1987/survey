@@ -1,5 +1,11 @@
 import { createOrUpdateIntegrationAction } from "@/app/(app)/environments/[environmentId]/integrations/actions";
 import SlackLogo from "@/images/slacklogo.png";
+import { AdditionalIntegrationSettings } from "@/modules/ui/components/additional-integration-settings";
+import { Button } from "@/modules/ui/components/button";
+import { Checkbox } from "@/modules/ui/components/checkbox";
+import { DropdownSelector } from "@/modules/ui/components/dropdown-selector";
+import { Label } from "@/modules/ui/components/label";
+import { Modal } from "@/modules/ui/components/modal";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
@@ -7,7 +13,7 @@ import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { getLocalizedValue } from "@formbricks/lib/i18n/utils";
 import { replaceHeadlineRecall } from "@formbricks/lib/utils/recall";
-import { TAttributeClass } from "@formbricks/types/attribute-classes";
+import { TContactAttributeKey } from "@formbricks/types/contact-attribute-key";
 import { TIntegrationItem } from "@formbricks/types/integration";
 import {
   TIntegrationSlack,
@@ -15,12 +21,6 @@ import {
   TIntegrationSlackInput,
 } from "@formbricks/types/integration/slack";
 import { TSurvey, TSurveyQuestionId } from "@formbricks/types/surveys/types";
-import { AdditionalIntegrationSettings } from "@formbricks/ui/components/AdditionalIntegrationSettings";
-import { Button } from "@formbricks/ui/components/Button";
-import { Checkbox } from "@formbricks/ui/components/Checkbox";
-import { DropdownSelector } from "@formbricks/ui/components/DropdownSelector";
-import { Label } from "@formbricks/ui/components/Label";
-import { Modal } from "@formbricks/ui/components/Modal";
 
 interface AddChannelMappingModalProps {
   environmentId: string;
@@ -30,7 +30,7 @@ interface AddChannelMappingModalProps {
   slackIntegration: TIntegrationSlack;
   channels: TIntegrationItem[];
   selectedIntegration?: (TIntegrationSlackConfigData & { index: number }) | null;
-  attributeClasses: TAttributeClass[];
+  contactAttributeKeys: TContactAttributeKey[];
 }
 
 export const AddChannelMappingModal = ({
@@ -41,7 +41,7 @@ export const AddChannelMappingModal = ({
   channels,
   slackIntegration,
   selectedIntegration,
-  attributeClasses,
+  contactAttributeKeys,
 }: AddChannelMappingModalProps) => {
   const { handleSubmit } = useForm();
   const t = useTranslations();
@@ -53,6 +53,7 @@ export const AddChannelMappingModal = ({
   const [includeVariables, setIncludeVariables] = useState(false);
   const [includeHiddenFields, setIncludeHiddenFields] = useState(false);
   const [includeMetadata, setIncludeMetadata] = useState(false);
+  const [includeCreatedAt, setIncludeCreatedAt] = useState(true);
   const existingIntegrationData = slackIntegration?.config?.data;
   const slackIntegrationData: TIntegrationSlackInput = {
     type: "slack",
@@ -86,6 +87,7 @@ export const AddChannelMappingModal = ({
       setIncludeVariables(!!selectedIntegration.includeVariables);
       setIncludeHiddenFields(!!selectedIntegration.includeHiddenFields);
       setIncludeMetadata(!!selectedIntegration.includeMetadata);
+      setIncludeCreatedAt(!!selectedIntegration.includeCreatedAt);
       return;
     }
     resetForm();
@@ -97,7 +99,7 @@ export const AddChannelMappingModal = ({
         throw new Error(t("environments.integrations.slack.please_select_a_channel"));
       }
       if (!selectedSurvey) {
-        throw new Error(t("environments.integrations.integrations.please_select_a_survey_error"));
+        throw new Error(t("environments.integrations.please_select_a_survey_error"));
       }
 
       if (selectedQuestions.length === 0) {
@@ -118,6 +120,7 @@ export const AddChannelMappingModal = ({
         includeVariables,
         includeHiddenFields,
         includeMetadata,
+        includeCreatedAt,
       };
       if (selectedIntegration) {
         // update action
@@ -243,27 +246,27 @@ export const AddChannelMappingModal = ({
                     <Label htmlFor="Surveys">{t("common.questions")}</Label>
                     <div className="mt-1 max-h-[15vh] overflow-y-auto rounded-lg border border-slate-200">
                       <div className="grid content-center rounded-lg bg-slate-50 p-3 text-left text-sm text-slate-900">
-                        {replaceHeadlineRecall(selectedSurvey, "default", attributeClasses)?.questions?.map(
-                          (question) => (
-                            <div key={question.id} className="my-1 flex items-center space-x-2">
-                              <label htmlFor={question.id} className="flex cursor-pointer items-center">
-                                <Checkbox
-                                  type="button"
-                                  id={question.id}
-                                  value={question.id}
-                                  className="bg-white"
-                                  checked={selectedQuestions.includes(question.id)}
-                                  onCheckedChange={() => {
-                                    handleCheckboxChange(question.id);
-                                  }}
-                                />
-                                <span className="ml-2">
-                                  {getLocalizedValue(question.headline, "default")}
-                                </span>
-                              </label>
-                            </div>
-                          )
-                        )}
+                        {replaceHeadlineRecall(
+                          selectedSurvey,
+                          "default",
+                          contactAttributeKeys
+                        )?.questions?.map((question) => (
+                          <div key={question.id} className="my-1 flex items-center space-x-2">
+                            <label htmlFor={question.id} className="flex cursor-pointer items-center">
+                              <Checkbox
+                                type="button"
+                                id={question.id}
+                                value={question.id}
+                                className="bg-white"
+                                checked={selectedQuestions.includes(question.id)}
+                                onCheckedChange={() => {
+                                  handleCheckboxChange(question.id);
+                                }}
+                              />
+                              <span className="ml-2">{getLocalizedValue(question.headline, "default")}</span>
+                            </label>
+                          </div>
+                        ))}
                       </div>
                     </div>
                   </div>
@@ -274,6 +277,8 @@ export const AddChannelMappingModal = ({
                     includeMetadata={includeMetadata}
                     setIncludeHiddenFields={setIncludeHiddenFields}
                     setIncludeMetadata={setIncludeMetadata}
+                    includeCreatedAt={includeCreatedAt}
+                    setIncludeCreatedAt={setIncludeCreatedAt}
                   />
                 </div>
               )}
@@ -282,13 +287,13 @@ export const AddChannelMappingModal = ({
           <div className="flex justify-end border-t border-slate-200 p-6">
             <div className="flex space-x-2">
               {selectedIntegration ? (
-                <Button type="button" variant="warn" loading={isDeleting} onClick={deleteLink}>
+                <Button type="button" variant="destructive" loading={isDeleting} onClick={deleteLink}>
                   {t("common.delete")}
                 </Button>
               ) : (
                 <Button
                   type="button"
-                  variant="minimal"
+                  variant="ghost"
                   onClick={() => {
                     setOpen(false);
                     resetForm();

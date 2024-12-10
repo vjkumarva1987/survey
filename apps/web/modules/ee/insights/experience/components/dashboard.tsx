@@ -5,17 +5,17 @@ import { InsightsCard } from "@/modules/ee/insights/experience/components/insigh
 import { ExperiencePageStats } from "@/modules/ee/insights/experience/components/stats";
 import { getDateFromTimeRange } from "@/modules/ee/insights/experience/lib/utils";
 import { TStatsPeriod } from "@/modules/ee/insights/experience/types/stats";
+import { Tabs, TabsList, TabsTrigger } from "@/modules/ui/components/tabs";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { TEnvironment } from "@formbricks/types/environment";
-import { TProduct } from "@formbricks/types/product";
+import { TProject } from "@formbricks/types/project";
 import { TUser, TUserLocale } from "@formbricks/types/user";
-import { Tabs, TabsList, TabsTrigger } from "@formbricks/ui/components/Tabs";
 
 interface DashboardProps {
   user: TUser;
   environment: TEnvironment;
-  product: TProduct;
+  project: TProject;
   insightsPerPage: number;
   documentsPerPage: number;
   locale: TUserLocale;
@@ -23,7 +23,7 @@ interface DashboardProps {
 
 export const Dashboard = ({
   environment,
-  product,
+  project,
   user,
   insightsPerPage,
   documentsPerPage,
@@ -65,7 +65,7 @@ export const Dashboard = ({
       <ExperiencePageStats statsFrom={statsFrom} environmentId={environment.id} />
       <InsightsCard
         statsFrom={statsFrom}
-        productName={product.name}
+        projectName={project.name}
         environmentId={environment.id}
         insightsPerPage={insightsPerPage}
         documentsPerPage={documentsPerPage}

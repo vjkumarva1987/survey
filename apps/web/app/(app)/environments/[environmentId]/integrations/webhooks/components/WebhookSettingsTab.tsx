@@ -4,9 +4,14 @@ import { SurveyCheckboxGroup } from "@/app/(app)/environments/[environmentId]/in
 import { TriggerCheckboxGroup } from "@/app/(app)/environments/[environmentId]/integrations/webhooks/components/TriggerCheckboxGroup";
 import { validWebHookURL } from "@/app/(app)/environments/[environmentId]/integrations/webhooks/lib/utils";
 import { getFormattedErrorMessage } from "@/lib/utils/helper";
+import { Button } from "@/modules/ui/components/button";
+import { DeleteDialog } from "@/modules/ui/components/delete-dialog";
+import { Input } from "@/modules/ui/components/input";
+import { Label } from "@/modules/ui/components/label";
 import clsx from "clsx";
 import { TrashIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -14,10 +19,6 @@ import { toast } from "react-hot-toast";
 import { TPipelineTrigger } from "@formbricks/types/pipelines";
 import { TSurvey } from "@formbricks/types/surveys/types";
 import { TWebhook, TWebhookInput } from "@formbricks/types/webhooks";
-import { Button } from "@formbricks/ui/components/Button";
-import { DeleteDialog } from "@formbricks/ui/components/DeleteDialog";
-import { Input } from "@formbricks/ui/components/Input";
-import { Label } from "@formbricks/ui/components/Label";
 import { deleteWebhookAction, testEndpointAction, updateWebhookAction } from "../actions";
 
 interface ActionSettingsTabProps {
@@ -213,19 +214,18 @@ export const WebhookSettingsTab = ({ webhook, surveys, setOpen, isReadOnly }: Ac
             {webhook.source === "user" && !isReadOnly && (
               <Button
                 type="button"
-                variant="warn"
+                variant="destructive"
                 onClick={() => setOpenDeleteDialog(true)}
-                StartIcon={TrashIcon}
                 className="mr-3">
+                <TrashIcon />
                 {t("common.delete")}
               </Button>
             )}
 
-            <Button
-              variant="secondary"
-              href="https://formbricks.com/docs/api/management/webhooks"
-              target="_blank">
-              {t("common.read_docs")}
+            <Button variant="secondary" asChild>
+              <Link href="https://formbricks.com/docs/api/management/webhooks" target="_blank">
+                {t("common.read_docs")}
+              </Link>
             </Button>
           </div>
 

@@ -2,11 +2,11 @@
 
 import { formbricksLogout } from "@/app/lib/formbricks";
 import { DeleteAccountModal } from "@/modules/account/components/DeleteAccountModal";
+import { Button } from "@/modules/ui/components/button";
 import type { Session } from "next-auth";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { TUser } from "@formbricks/types/user";
-import { Button } from "@formbricks/ui/components/Button";
 
 export const DeleteAccount = ({
   session,
@@ -35,7 +35,7 @@ export const DeleteAccount = ({
       <p className="text-sm text-slate-700">
         <strong>{t("warning_cannot_undo")}</strong>
       </p>
-      <Button className="mt-4" variant="warn" size="sm" onClick={() => setModalOpen(!isModalOpen)}>
+      <Button className="mt-4" variant="destructive" size="sm" onClick={() => setModalOpen(!isModalOpen)}>
         {t("confirm_delete_my_account")}
       </Button>
     </div>

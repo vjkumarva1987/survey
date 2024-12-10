@@ -1,15 +1,15 @@
 import ClientEnvironmentRedirect from "@/app/ClientEnvironmentRedirect";
+import { authOptions } from "@/modules/auth/lib/authOptions";
+import { ClientLogout } from "@/modules/ui/components/client-logout";
 import type { Session } from "next-auth";
 import { getServerSession } from "next-auth";
 import { getTranslations } from "next-intl/server";
 import { redirect } from "next/navigation";
-import { authOptions } from "@formbricks/lib/authOptions";
 import { getFirstEnvironmentIdByUserId } from "@formbricks/lib/environment/service";
 import { getIsFreshInstance } from "@formbricks/lib/instance/service";
 import { getMembershipByUserIdOrganizationId } from "@formbricks/lib/membership/service";
 import { getAccessFlags } from "@formbricks/lib/membership/utils";
 import { getOrganizationsByUserId } from "@formbricks/lib/organization/service";
-import { ClientLogout } from "@formbricks/ui/components/ClientLogout";
 
 const Page = async () => {
   const t = await getTranslations();
@@ -50,7 +50,7 @@ const Page = async () => {
   if (!environmentId) {
     console.error(t("common.failed_to_get_first_environment_of_user"));
     if (isOwner || isManager) {
-      return redirect(`/organizations/${userOrganizations[0].id}/products/new/mode`);
+      return redirect(`/organizations/${userOrganizations[0].id}/projects/new/mode`);
     } else {
       return redirect(`/organizations/${userOrganizations[0].id}/landing`);
     }

@@ -4,6 +4,10 @@ import {
   getIfResponseWithSurveyIdAndEmailExistAction,
   sendLinkSurveyEmailAction,
 } from "@/app/s/[surveyId]/actions";
+import { Button } from "@/modules/ui/components/button";
+import { FormControl, FormError, FormField, FormItem } from "@/modules/ui/components/form";
+import { Input } from "@/modules/ui/components/input";
+import { StackedCardsContainer } from "@/modules/ui/components/stacked-cards-container";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowLeft, MailIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -13,21 +17,17 @@ import { Toaster, toast } from "react-hot-toast";
 import { z } from "zod";
 import { getLocalizedValue } from "@formbricks/lib/i18n/utils";
 import { replaceHeadlineRecall } from "@formbricks/lib/utils/recall";
-import { TAttributeClass } from "@formbricks/types/attribute-classes";
-import { TProductStyling } from "@formbricks/types/product";
+import { TContactAttributeKey } from "@formbricks/types/contact-attribute-key";
+import { TProjectStyling } from "@formbricks/types/project";
 import { TSurvey } from "@formbricks/types/surveys/types";
-import { Button } from "@formbricks/ui/components/Button";
-import { FormControl, FormError, FormField, FormItem } from "@formbricks/ui/components/Form";
-import { Input } from "@formbricks/ui/components/Input";
-import { StackedCardsContainer } from "@formbricks/ui/components/StackedCardsContainer";
 
 interface VerifyEmailProps {
   survey: TSurvey;
   isErrorComponent?: boolean;
   singleUseId?: string;
   languageCode: string;
-  styling: TProductStyling;
-  attributeClasses: TAttributeClass[];
+  contactAttributeKeys: TContactAttributeKey[];
+  styling: TProjectStyling;
   locale: string;
 }
 
@@ -42,7 +42,7 @@ export const VerifyEmail = ({
   singleUseId,
   languageCode,
   styling,
-  attributeClasses,
+  contactAttributeKeys,
   locale,
 }: VerifyEmailProps) => {
   const t = useTranslations();
@@ -53,8 +53,8 @@ export const VerifyEmail = ({
     resolver: zodResolver(ZVerifyEmailInput),
   });
   survey = useMemo(() => {
-    return replaceHeadlineRecall(survey, "default", attributeClasses);
-  }, [survey, attributeClasses]);
+    return replaceHeadlineRecall(survey, "default", contactAttributeKeys);
+  }, [survey, contactAttributeKeys]);
 
   const { isSubmitting } = form.formState;
   const [showPreviewQuestions, setShowPreviewQuestions] = useState(false);
@@ -184,12 +184,8 @@ export const VerifyEmail = ({
             <p className="mt-4 text-center text-sm text-slate-500 lg:text-base">
               {t("s.check_inbox_or_spam")}
             </p>
-            <Button
-              variant="secondary"
-              className="mt-6"
-              size="sm"
-              onClick={handleGoBackClick}
-              StartIcon={ArrowLeft}>
+            <Button variant="secondary" className="mt-6" size="sm" onClick={handleGoBackClick}>
+              <ArrowLeft />
               {t("common.back")}
             </Button>
           </div>

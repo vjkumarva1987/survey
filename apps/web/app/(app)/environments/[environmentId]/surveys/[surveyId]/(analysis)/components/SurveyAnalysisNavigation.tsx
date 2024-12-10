@@ -7,13 +7,13 @@ import {
 } from "@/app/(app)/environments/[environmentId]/surveys/[surveyId]/(analysis)/actions";
 import { getFormattedFilters } from "@/app/lib/surveys/surveys";
 import { getResponseCountBySurveySharingKeyAction } from "@/app/share/[sharingKey]/actions";
+import { SecondaryNavigation } from "@/modules/ui/components/secondary-navigation";
 import { InboxIcon, PresentationIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useParams, usePathname, useSearchParams } from "next/navigation";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useIntervalWhenFocused } from "@formbricks/lib/utils/hooks/useIntervalWhenFocused";
 import { TSurvey } from "@formbricks/types/surveys/types";
-import { SecondaryNavigation } from "@formbricks/ui/components/SecondaryNavigation";
 
 interface SurveyAnalysisNavigationProps {
   environmentId: string;
@@ -44,7 +44,7 @@ export const SurveyAnalysisNavigation = ({
 
   const filters = useMemo(
     () => getFormattedFilters(survey, selectedFilter, dateRange),
-    [selectedFilter, dateRange]
+    [selectedFilter, dateRange, survey]
   );
 
   const latestFiltersRef = useRef(filters);
@@ -61,24 +61,24 @@ export const SurveyAnalysisNavigation = ({
     setTotalResponseCount(responseCount);
   };
 
-  const getFilteredResponseCount = () => {
+  const getFilteredResponseCount = useCallback(() => {
     if (isSharingPage)
       return getResponseCountBySurveySharingKeyAction({
         sharingKey,
         filterCriteria: latestFiltersRef.current,
       });
     return getResponseCountAction({ surveyId: survey.id, filterCriteria: latestFiltersRef.current });
-  };
+  }, [isSharingPage, sharingKey, survey.id]);
 
-  const fetchFilteredResponseCount = async () => {
+  const fetchFilteredResponseCount = useCallback(async () => {
     const count = await getFilteredResponseCount();
     const responseCount = count?.data ?? 0;
     setFilteredResponseCount(responseCount);
-  };
+  }, [getFilteredResponseCount]);
 
   useEffect(() => {
     fetchFilteredResponseCount();
-  }, [filters, isSharingPage, sharingKey, survey.id]);
+  }, [filters, isSharingPage, sharingKey, survey.id, fetchFilteredResponseCount]);
 
   useIntervalWhenFocused(
     () => {

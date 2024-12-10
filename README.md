@@ -15,12 +15,12 @@
 <p align="center">
 Harvest user-insights, build irresistible experiences.
 <br />
-<a href="https://formbricks.com/">Website</a> | <a href="https://formbricks.com/discord">Join Discord community</a>
+<a href="https://formbricks.com/">Website</a>
 </p>
 </p>
 
 <p align="center">
-<a href="https://github.com/formbricks/formbricks/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-AGPL-purple" alt="License"></a> <a href="https://formbricks.com/discord"><img src="https://img.shields.io/discord/979077669410979880?label=Discord&logo=discord&logoColor=%23fff" alt="Join Formbricks Discord"></a> <a href="https://github.com/formbricks/formbricks/stargazers"><img src="https://img.shields.io/github/stars/formbricks/formbricks?logo=github" alt="Github Stars"></a>
+<a href="https://github.com/formbricks/formbricks/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-AGPL-purple" alt="License"></a> <a href="https://github.com/formbricks/formbricks/stargazers"><img src="https://img.shields.io/github/stars/formbricks/formbricks?logo=github" alt="Github Stars"></a>
 <a href="https://news.ycombinator.com/item?id=32303986"><img src="https://img.shields.io/badge/Hacker%20News-122-%23FF6600" alt="Hacker News"></a>
 <a href="[https://www.producthunt.com/products/formbricks](https://www.producthunt.com/posts/formbricks)"><img src="https://img.shields.io/badge/Product%20Hunt-455-orange?logo=producthunt&logoColor=%23fff" alt="Product Hunt"></a>
 <a href="https://github.blog/2023-04-12-github-accelerator-our-first-cohort-and-whats-next/"><img src="https://img.shields.io/badge/2023-blue?logo=github&label=Github%20Accelerator" alt="Github Accelerator"></a>
@@ -232,10 +232,10 @@ Additional to the AGPL licensed Formbricks core, this repository contains code l
 
 ### White-Labeling Formbricks and Other Licensing Needs
 
-We currently do not offer Formbricks white-labeled. Any other needs? [Send us an email](mailto:hola@formbricks.com).
+We currently do not offer Formbricks white-labeled. That means that we don't sell a license which let's other companies resell Formbricks to third parties under their name nor take parts (like the survey editor) out of Formbricks to add to their own software products. Any other needs? [Send us an email](mailto:hola@formbricks.com).
 
 ### Why charge for Enterprise Features?
 
-The Enterprise Edition and White-Label Licenses allow us to fund the development of Formbricks sustainably. It guarantees that the open-source surveying infrastructure we're building will be around for decades to come.
+The Enterprise Edition allows us to fund the development of Formbricks sustainably. It guarantees that the free and open-source surveying infrastructure we're building will be around for decades to come.
 
 <p align="right"><a href="#top">🔼 Back to top</a></p>

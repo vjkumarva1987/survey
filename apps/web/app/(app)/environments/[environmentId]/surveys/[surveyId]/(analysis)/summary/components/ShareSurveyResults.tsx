@@ -1,9 +1,10 @@
+import { Button } from "@/modules/ui/components/button";
+import { Modal } from "@/modules/ui/components/modal";
 import { AlertCircleIcon, CheckCircle2Icon } from "lucide-react";
 import { Clipboard } from "lucide-react";
 import { useTranslations } from "next-intl";
+import Link from "next/link";
 import { toast } from "react-hot-toast";
-import { Button } from "@formbricks/ui/components/Button";
-import { Modal } from "@formbricks/ui/components/Modal";
 
 interface ShareEmbedSurveyProps {
   open: boolean;
@@ -61,8 +62,10 @@ export const ShareSurveyResults = ({
                 onClick={() => handleUnpublish()}>
                 {t("environments.surveys.summary.unpublish_from_web")}
               </Button>
-              <Button className="text-center" href={surveyUrl} target="_blank">
-                {t("environments.surveys.summary.view_site")}
+              <Button className="text-center" asChild>
+                <Link href={surveyUrl} target="_blank" rel="noopener noreferrer">
+                  {t("environments.surveys.summary.view_site")}
+                </Link>
               </Button>
             </div>
           </div>

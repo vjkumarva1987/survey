@@ -5,15 +5,8 @@ import { z } from "zod";
 import { prisma } from "@formbricks/database";
 import { ZId } from "@formbricks/types/common";
 import { DatabaseError, ResourceNotFoundError } from "@formbricks/types/errors";
-import {
-  TUser,
-  TUserCreateInput,
-  TUserLocale,
-  TUserUpdateInput,
-  ZUserUpdateInput,
-} from "@formbricks/types/user";
+import { TUser, TUserLocale, TUserUpdateInput, ZUserUpdateInput } from "@formbricks/types/user";
 import { cache } from "../cache";
-import { createCustomerIoCustomer } from "../customerio";
 import { deleteOrganization } from "../organization/service";
 import { validateInputs } from "../utils/validate";
 import { userCache } from "./cache";
@@ -152,37 +145,6 @@ const deleteUserById = async (id: string): Promise<TUser> => {
   }
 };
 
-export const createUser = async (data: TUserCreateInput): Promise<TUser> => {
-  validateInputs([data, ZUserUpdateInput]);
-  try {
-    const user = await prisma.user.create({
-      data: data,
-      select: responseSelection,
-    });
-
-    userCache.revalidate({
-      email: user.email,
-      id: user.id,
-      count: true,
-    });
-
-    // send new user customer.io to customer.io
-    createCustomerIoCustomer(user);
-
-    return user;
-  } catch (error) {
-    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
-      throw new DatabaseError("User with this email already exists");
-    }
-
-    if (error instanceof Prisma.PrismaClientKnownRequestError) {
-      throw new DatabaseError(error.message);
-    }
-
-    throw error;
-  }
-};
-
 // function to delete a user's user including organizations
 export const deleteUser = async (id: string): Promise<TUser> => {
   validateInputs([id, ZId]);
@@ -251,33 +213,6 @@ export const getUsersWithOrganization = async (organizationId: string): Promise<
       throw new DatabaseError(error.message);
     }
 
-    throw error;
-  }
-};
-
-export const userIdRelatedToApiKey = async (apiKey: string) => {
-  validateInputs([apiKey, z.string()]);
-
-  try {
-    const userId = await prisma.apiKey.findUnique({
-      where: { id: apiKey },
-      select: {
-        environment: {
-          select: {
-            people: {
-              select: {
-                userId: true,
-              },
-            },
-          },
-        },
-      },
-    });
-    return userId;
-  } catch (error) {
-    if (error instanceof Prisma.PrismaClientKnownRequestError) {
-      throw new DatabaseError(error.message);
-    }
     throw error;
   }
 };

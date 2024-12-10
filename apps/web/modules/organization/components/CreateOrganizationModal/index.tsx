@@ -1,17 +1,17 @@
 "use client";
 
-import { createOrganizationAction } from "@/app/(app)/environments/[environmentId]/actions";
 import { getFormattedErrorMessage } from "@/lib/utils/helper";
+import { createOrganizationAction } from "@/modules/organization/actions";
+import { Button } from "@/modules/ui/components/button";
+import { Input } from "@/modules/ui/components/input";
+import { Label } from "@/modules/ui/components/label";
+import { Modal } from "@/modules/ui/components/modal";
 import { PlusCircleIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
-import { Button } from "@formbricks/ui/components/Button";
-import { Input } from "@formbricks/ui/components/Input";
-import { Label } from "@formbricks/ui/components/Label";
-import { Modal } from "@formbricks/ui/components/Modal";
 
 interface CreateOrganizationModalProps {
   open: boolean;
@@ -88,7 +88,7 @@ export const CreateOrganizationModal = ({ open, setOpen }: CreateOrganizationMod
             <div className="flex space-x-2">
               <Button
                 type="button"
-                variant="minimal"
+                variant="ghost"
                 onClick={() => {
                   setOpen(false);
                 }}>

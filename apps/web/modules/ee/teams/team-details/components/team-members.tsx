@@ -6,32 +6,26 @@ import { AddTeamMemberModal } from "@/modules/ee/teams/team-details/components/a
 import { TOrganizationMember, TTeamMember } from "@/modules/ee/teams/team-details/types/teams";
 import { TTeamRole, ZTeamRole } from "@/modules/ee/teams/team-list/types/teams";
 import { TeamRoleMapping, getTeamAccessFlags } from "@/modules/ee/teams/utils/teams";
-import { InfoIcon } from "lucide-react";
-import { useTranslations } from "next-intl";
-import { useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
-import toast from "react-hot-toast";
-import { getAccessFlags } from "@formbricks/lib/membership/utils";
-import { TOrganizationRole } from "@formbricks/types/memberships";
-import { AlertDialog } from "@formbricks/ui/components/AlertDialog";
-import { Button } from "@formbricks/ui/components/Button";
-import { Card, CardContent, CardHeader, CardTitle } from "@formbricks/ui/components/Card";
+import { AlertDialog } from "@/modules/ui/components/alert-dialog";
+import { Button } from "@/modules/ui/components/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/modules/ui/components/card";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@formbricks/ui/components/Select";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@formbricks/ui/components/Table";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@formbricks/ui/components/Tooltip";
+} from "@/modules/ui/components/select";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/modules/ui/components/table";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/modules/ui/components/tooltip";
+import { InfoIcon } from "lucide-react";
+import { useTranslations } from "next-intl";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useMemo, useState } from "react";
+import toast from "react-hot-toast";
+import { getAccessFlags } from "@formbricks/lib/membership/utils";
+import { TOrganizationRole } from "@formbricks/types/memberships";
 
 interface TeamMembersProps {
   members: TTeamMember[];
@@ -110,12 +104,12 @@ export const TeamMembers = ({
           <CardTitle>{t("environments.settings.teams.team_members")}</CardTitle>
           <div className="flex gap-2">
             {isOwnerOrManager && (
-              <Button variant="secondary" size="sm" href="../general">
-                {t("environments.settings.teams.invite_member")}
+              <Button variant="secondary" size="sm" asChild>
+                <Link href="../general">{t("environments.settings.teams.invite_member")}</Link>
               </Button>
             )}
             {canPerformRoleManagement && (
-              <Button variant="primary" size="sm" onClick={() => setOpenAddMemberModal(true)}>
+              <Button size="sm" onClick={() => setOpenAddMemberModal(true)}>
                 {t("environments.settings.teams.add_member")}
               </Button>
             )}
@@ -193,7 +187,7 @@ export const TeamMembers = ({
                         {(teamMember.id !== currentUserId ||
                           (teamMember.id === currentUserId && isOwnerOrManager)) && (
                           <Button
-                            variant="warn"
+                            variant="destructive"
                             size="sm"
                             onClick={() => {
                               setSelectedTeamMemberId(teamMember.id);

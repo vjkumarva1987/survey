@@ -8,10 +8,11 @@ import {
   getOrganizationIdFromDocumentId,
   getOrganizationIdFromEnvironmentId,
   getOrganizationIdFromInsightId,
-  getProductIdFromDocumentId,
-  getProductIdFromEnvironmentId,
-  getProductIdFromInsightId,
+  getProjectIdFromDocumentId,
+  getProjectIdFromEnvironmentId,
+  getProjectIdFromInsightId,
 } from "@/lib/utils/helper";
+import { checkAIPermission } from "@/modules/ee/insights/actions";
 import {
   getDocumentsByInsightId,
   getDocumentsByInsightIdSurveyIdQuestionId,
@@ -40,21 +41,25 @@ export const getDocumentsByInsightIdSurveyIdQuestionIdAction = authenticatedActi
       throw new Error("Insight and survey are not in the same environment");
     }
 
+    const organizationId = await getOrganizationIdFromEnvironmentId(surveyEnvironmentId);
+
     await checkAuthorizationUpdated({
       userId: ctx.user.id,
-      organizationId: await getOrganizationIdFromEnvironmentId(surveyEnvironmentId),
+      organizationId,
       access: [
         {
           type: "organization",
           roles: ["owner", "manager"],
         },
         {
-          type: "productTeam",
+          type: "projectTeam",
           minPermission: "read",
-          productId: await getProductIdFromEnvironmentId(surveyEnvironmentId),
+          projectId: await getProjectIdFromEnvironmentId(surveyEnvironmentId),
         },
       ],
     });
+
+    await checkAIPermission(organizationId);
 
     return await getDocumentsByInsightIdSurveyIdQuestionId(
       parsedInput.insightId,
@@ -75,21 +80,24 @@ const ZGetDocumentsByInsightIdAction = z.object({
 export const getDocumentsByInsightIdAction = authenticatedActionClient
   .schema(ZGetDocumentsByInsightIdAction)
   .action(async ({ ctx, parsedInput }) => {
+    const organizationId = await getOrganizationIdFromInsightId(parsedInput.insightId);
     await checkAuthorizationUpdated({
       userId: ctx.user.id,
-      organizationId: await getOrganizationIdFromInsightId(parsedInput.insightId),
+      organizationId,
       access: [
         {
           type: "organization",
           roles: ["owner", "manager"],
         },
         {
-          type: "productTeam",
+          type: "projectTeam",
           minPermission: "read",
-          productId: await getProductIdFromInsightId(parsedInput.insightId),
+          projectId: await getProjectIdFromInsightId(parsedInput.insightId),
         },
       ],
     });
+
+    await checkAIPermission(organizationId);
 
     return await getDocumentsByInsightId(
       parsedInput.insightId,
@@ -111,21 +119,24 @@ const ZUpdateDocumentAction = z.object({
 export const updateDocumentAction = authenticatedActionClient
   .schema(ZUpdateDocumentAction)
   .action(async ({ ctx, parsedInput }) => {
+    const organizationId = await getOrganizationIdFromDocumentId(parsedInput.documentId);
     await checkAuthorizationUpdated({
       userId: ctx.user.id,
-      organizationId: await getOrganizationIdFromDocumentId(parsedInput.documentId),
+      organizationId,
       access: [
         {
           type: "organization",
           roles: ["owner", "manager"],
         },
         {
-          type: "productTeam",
+          type: "projectTeam",
           minPermission: "readWrite",
-          productId: await getProductIdFromDocumentId(parsedInput.documentId),
+          projectId: await getProjectIdFromDocumentId(parsedInput.documentId),
         },
       ],
     });
+
+    await checkAIPermission(organizationId);
 
     return await updateDocument(parsedInput.documentId, parsedInput.data);
   });

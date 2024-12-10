@@ -1,5 +1,8 @@
 import { deleteIntegrationAction } from "@/app/(app)/environments/[environmentId]/integrations/actions";
 import { getFormattedErrorMessage } from "@/lib/utils/helper";
+import { Button } from "@/modules/ui/components/button";
+import { DeleteDialog } from "@/modules/ui/components/delete-dialog";
+import { EmptySpaceFiller } from "@/modules/ui/components/empty-space-filler";
 import { Trash2Icon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import React, { useState } from "react";
@@ -8,9 +11,6 @@ import { timeSince } from "@formbricks/lib/time";
 import { TEnvironment } from "@formbricks/types/environment";
 import { TIntegrationNotion, TIntegrationNotionConfigData } from "@formbricks/types/integration/notion";
 import { TUserLocale } from "@formbricks/types/user";
-import { Button } from "@formbricks/ui/components/Button";
-import { DeleteDialog } from "@formbricks/ui/components/DeleteDialog";
-import { EmptySpaceFiller } from "@formbricks/ui/components/EmptySpaceFiller";
 
 interface ManageIntegrationProps {
   environment: TEnvironment;
@@ -122,12 +122,8 @@ export const ManageIntegration = ({
           </div>
         </div>
       )}
-      <Button
-        variant="minimal"
-        onClick={() => setIsDeleteIntegrationModalOpen(true)}
-        className="mt-4"
-        StartIcon={Trash2Icon}
-        startIconClassName="h-5 w-5 mr-2">
+      <Button variant="ghost" onClick={() => setIsDeleteIntegrationModalOpen(true)} className="mt-4">
+        <Trash2Icon />
         {t("environments.integrations.delete_integration")}
       </Button>
 

@@ -1,13 +1,14 @@
 "use client";
 
-import { generateInsightsForSurveyAction } from "@/app/(app)/environments/[environmentId]/surveys/[surveyId]/(analysis)/actions";
+import { generateInsightsForSurveyAction } from "@/modules/ee/insights/actions";
+import { Alert, AlertDescription, AlertTitle } from "@/modules/ui/components/alert";
+import { Badge } from "@/modules/ui/components/badge";
+import { Button } from "@/modules/ui/components/button";
+import { TooltipRenderer } from "@/modules/ui/components/tooltip";
 import { SparklesIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import toast from "react-hot-toast";
-import { Alert, AlertDescription, AlertTitle } from "@formbricks/ui/components/Alert";
-import { Badge } from "@formbricks/ui/components/Badge";
-import { Button } from "@formbricks/ui/components/Button";
 
 interface EnableInsightsBannerProps {
   surveyId: string;
@@ -50,20 +51,21 @@ export const EnableInsightsBanner = ({
           {t("environments.surveys.summary.enable_ai_insights_banner_description")}
         </AlertDescription>
       </div>
-      <Button
-        variant="primary"
-        size="sm"
-        className="shrink-0"
-        onClick={handleInsightGeneration}
-        loading={isGeneratingInsights}
-        disabled={surveyResponseCount > maxResponseCount}
-        tooltip={
+      <TooltipRenderer
+        tooltipContent={
           surveyResponseCount > maxResponseCount
             ? t("environments.surveys.summary.enable_ai_insights_banner_tooltip")
             : undefined
         }>
-        {t("environments.surveys.summary.enable_ai_insights_banner_button")}
-      </Button>
+        <Button
+          size="sm"
+          className="shrink-0"
+          onClick={handleInsightGeneration}
+          loading={isGeneratingInsights}
+          disabled={surveyResponseCount > maxResponseCount}>
+          {t("environments.surveys.summary.enable_ai_insights_banner_button")}
+        </Button>
+      </TooltipRenderer>
     </Alert>
   );
 };
